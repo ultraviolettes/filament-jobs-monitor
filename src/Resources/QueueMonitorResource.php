@@ -91,10 +91,11 @@ class QueueMonitorResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('status')
+                    ->label(__('filament-jobs-monitor::translations.status'))
                     ->options([
-                        'running' => 'Running',
-                        'succeeded' => 'Succeeded',
-                        'failed' => 'Failed',
+                        'running' => __('filament-jobs-monitor::translations.running'),
+                        'succeeded' => __('filament-jobs-monitor::translations.succeeded'),
+                        'failed' => __('filament-jobs-monitor::translations.failed'),
                     ])
                     ->query(function (Builder $query, array $data) {
                         if ($data['value'] === 'succeeded') {

@@ -18,4 +18,6 @@ return [
     'title' => 'Lavori in coda',
     'total_jobs' => 'Totale lavori eseguiti',
     'details' => 'Dettagli',
+    'attempts' => 'Tentativi',
+    'exception' => 'Exception',
 ];

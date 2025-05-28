@@ -17,4 +17,6 @@ return [
     'progress' => 'Pokrok',
     'started_at' => 'Čas spuštění',
     'details' => 'Podrobnosti',
+    'attempts' => 'Pokusy',
+    'exception' => 'Exception',
 ];

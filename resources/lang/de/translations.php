@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'breadcrumb' => 'Queue Job Monitor',
-    'title' => 'Queued Jobs',
+    'breadcrumb' => 'Jobs',
+    'title' => 'Jobs',
     'navigation_label' => 'Jobs',
     'navigation_group' => 'System',
     'total_jobs' => 'Ausgeführte Jobs',

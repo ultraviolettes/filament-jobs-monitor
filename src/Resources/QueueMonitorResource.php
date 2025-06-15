@@ -17,6 +17,7 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Filament\Pages\SubNavigationPosition;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
@@ -132,6 +133,12 @@ class QueueMonitorResource extends Resource
     public static function getNavigationLabel(): string
     {
         return Str::title(static::getPluralModelLabel()) ?? Str::title(static::getModelLabel());
+    }
+
+
+    public static function getSubNavigationPosition(): SubNavigationPosition
+    {
+        return config('filament-jobs-monitor.resources.sub_navigation_position', static::$subNavigationPosition);
     }
 
     public static function getCluster(): ?string

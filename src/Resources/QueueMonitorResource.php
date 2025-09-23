@@ -10,7 +10,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action as FilamentTableAction;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -24,9 +24,9 @@ class QueueMonitorResource extends Resource
 {
     protected static ?string $model = QueueMonitor::class;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
                 TextInput::make('job_id')
                     ->required()

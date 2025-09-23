@@ -1,12 +1,11 @@
 {
-    "name": "croustibat/filament-jobs-monitor",
+    "name": "fatrex/filament-jobs-monitor",
     "description": "Background Jobs monitoring like Horizon for all drivers for FilamentPHP",
     "keywords": [
-        "croustibat",
         "laravel",
         "filament-jobs-monitor"
     ],
-    "homepage": "https://github.com/croustibat/filament-jobs-monitor",
+    "homepage": "https://github.com/fatrex/filament-jobs-monitor",
     "license": "MIT",
     "authors": [
         {

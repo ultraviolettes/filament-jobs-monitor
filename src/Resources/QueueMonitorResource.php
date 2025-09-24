@@ -12,8 +12,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\Action as FilamentTableAction;
-use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -75,8 +75,8 @@ class QueueMonitorResource extends Resource
                     ->sortable(),
             ])
             ->defaultSort('started_at', 'desc')
-            ->actions([
-                FilamentTableAction::make('details')
+            ->recordActions([
+                Action::make('details')
                     ->label(__('filament-jobs-monitor::translations.details'))
                     ->icon('heroicon-o-information-circle')
                     ->modalContent(fn (QueueMonitor $queueMonitor) => view('filament-jobs-monitor::queue-monitor-details', [
@@ -86,7 +86,7 @@ class QueueMonitorResource extends Resource
                     ]))
                     ->modalSubmitAction(false),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 DeleteBulkAction::make(),
             ])
             ->filters([

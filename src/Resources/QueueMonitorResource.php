@@ -97,19 +97,22 @@ class QueueMonitorResource extends Resource
                         'succeeded' => __('filament-jobs-monitor::translations.succeeded'),
                         'failed' => __('filament-jobs-monitor::translations.failed'),
                     ])
-                    ->query(function (Builder $query, array $data) {
-                        if ($data['value'] === 'succeeded') {
+                    ->query(function (Builder $query, $state): Builder {
+                        $value = $state['value'];
+                        if ($value === 'succeeded') {
                             return $query
                                 ->whereNotNull('finished_at')
                                 ->where('failed', 0);
-                        } elseif ($data['value'] === 'failed') {
+                        } elseif ($value === 'failed') {
                             return $query
                                 ->whereNotNull('finished_at')
                                 ->where('failed', 1);
-                        } elseif ($data['value'] === 'running') {
+                        } elseif ($value === 'running') {
                             return $query
                                 ->whereNull('finished_at');
                         }
+
+                        return $query;
                     }),
             ]);
     }

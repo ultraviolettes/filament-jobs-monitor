@@ -14,10 +14,12 @@ class QueueStatsOverview extends BaseWidget
 {
     protected function getCards(): array
     {
+        $driver = DB::connection()->getConfig('driver');
+
         $aggregationColumns = [
             DB::raw('COUNT(*) as count'),
-            DB::raw('SUM(finished_at - started_at) as total_time_elapsed'),
-            DB::raw('AVG(finished_at - started_at) as average_time_elapsed'),
+            DB::raw($this->buildAggregateMode('SUM', 'finished_at', 'started_at', $driver) . ' as total_time_elapsed'),
+            DB::raw($this->buildAggregateMode('AVG', 'finished_at', 'started_at', $driver) . ' as average_time_elapsed'),
         ];
 
         $aggregatedInfo = QueueMonitor::query()
@@ -25,7 +27,7 @@ class QueueStatsOverview extends BaseWidget
             ->first();
 
         $queueSize = collect(config('filament-jobs-monitor.queues') ?? ['default'])
-            ->map(fn (string $queue): int => Queue::size($queue))
+            ->map(fn(string $queue): int => Queue::size($queue))
             ->sum();
 
         $totalJobs = Number::format($aggregatedInfo->count ?? 0);
@@ -38,5 +40,25 @@ class QueueStatsOverview extends BaseWidget
             Stat::make(__('filament-jobs-monitor::translations.execution_time'), $executionTime),
             Stat::make(__('filament-jobs-monitor::translations.average_time'), ceil((float) $aggregatedInfo->average_time_elapsed).'s' ?? 0),
         ];
+    }
+
+    private function buildAggregateMode($mode, string $col1, string $col2, $driver = null): string
+    {
+        return sprintf(
+            '%s(%s - %s)%s',
+            $mode,
+            $this->dbColumnAsInteger($col1),
+            $this->dbColumnAsInteger($col2),
+            ($driver === 'pgsql' ? '::int' : '')
+        );
+    }
+
+    private function dbColumnAsInteger(string $colName): string
+    {
+        if (DB::connection()->getConfig('driver') === 'pgsql') {
+            return sprintf('CAST(EXTRACT(EPOCH FROM %s) AS INTEGER)', $colName);
+        }
+
+        return $colName;
     }
 }

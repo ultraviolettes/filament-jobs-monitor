@@ -11,13 +11,13 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action as FilamentTableAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Filament\Pages\SubNavigationPosition;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
@@ -134,7 +134,6 @@ class QueueMonitorResource extends Resource
     {
         return Str::title(static::getPluralModelLabel()) ?? Str::title(static::getModelLabel());
     }
-
 
     public static function getSubNavigationPosition(): SubNavigationPosition
     {

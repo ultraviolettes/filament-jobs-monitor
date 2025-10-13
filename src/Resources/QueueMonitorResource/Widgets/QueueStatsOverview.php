@@ -18,8 +18,8 @@ class QueueStatsOverview extends BaseWidget
 
         $aggregationColumns = [
             DB::raw('COUNT(*) as count'),
-            DB::raw($this->buildAggregateMode('SUM', 'finished_at', 'started_at', $driver) . ' as total_time_elapsed'),
-            DB::raw($this->buildAggregateMode('AVG', 'finished_at', 'started_at', $driver) . ' as average_time_elapsed'),
+            DB::raw($this->buildAggregateMode('SUM', 'finished_at', 'started_at', $driver).' as total_time_elapsed'),
+            DB::raw($this->buildAggregateMode('AVG', 'finished_at', 'started_at', $driver).' as average_time_elapsed'),
         ];
 
         $aggregatedInfo = QueueMonitor::query()
@@ -27,7 +27,7 @@ class QueueStatsOverview extends BaseWidget
             ->first();
 
         $queueSize = collect(config('filament-jobs-monitor.queues') ?? ['default'])
-            ->map(fn(string $queue): int => Queue::size($queue))
+            ->map(fn (string $queue): int => Queue::size($queue))
             ->sum();
 
         $totalJobs = Number::format($aggregatedInfo->count ?? 0);

@@ -10,7 +10,7 @@ class ListQueueMonitors extends ListRecords
 {
     public static string $resource = QueueMonitorResource::class;
 
-    public function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [];
     }

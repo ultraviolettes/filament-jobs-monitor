@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Queue;
 
 class QueueStatsOverview extends BaseWidget
 {
-    protected function getCards(): array
+    protected function getStats(): array
     {
         $aggregationColumns = [
             DB::raw('COUNT(*) as count'),

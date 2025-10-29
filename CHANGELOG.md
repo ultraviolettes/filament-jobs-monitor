@@ -2,6 +2,30 @@
 
 All notable changes to `filament-jobs-monitor` will be documented in this file.
 
+## 3.0.0 - 2025-10-29
+
+### Breaking Changes
+
+This release adds support for Filament v4, which includes several breaking changes from Filament v3. Please see [UPGRADE.md](UPGRADE.md) for a complete migration guide.
+
+- **Filament v4 Compatibility**: Updated minimum Filament version requirement from `^3.0` to `^4.0`
+- **Form/Schema API**: Changed `form(Form $form)` method signature to `form(Schema $schema)` following Filament v4 conventions
+- **Action Namespace**: Moved action imports from `Filament\Tables\Actions` to `Filament\Actions` namespace
+- **Page Actions**: Renamed `getActions()` to `getHeaderActions()` in ListRecords pages (visibility changed from public to protected)
+- **Widget Methods**: Renamed `getCards()` to `getStats()` in StatsOverviewWidget classes
+
+### Added
+
+- Added `HasNavigation` trait to resources for better navigation handling
+- Added `sub_navigation_position` configuration option to customize sub-navigation placement (Top or Sidebar)
+- Added comprehensive [UPGRADE.md](UPGRADE.md) migration guide
+
+### Changed
+
+- Updated all imports to use Filament v4 namespace structure
+- Updated README with version 3.x compatibility information
+- Enhanced configuration file with additional options and documentation
+
 ## 2.3.0 - 2024-03-26
 
 https://github.com/croustibat/filament-jobs-monitor/releases/tag/2.3.0

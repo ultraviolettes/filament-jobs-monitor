@@ -13,10 +13,11 @@ This is a package to monitor background jobs for FilamentPHP. It is inspired by 
 
 Check your filamentPHP version before installing:
 
-| Version | FilamentPHP | PHP   |
-| ------- | ----------- |-------|
-| 1.*     | 2.*         | 8.1   |
+| Version | FilamentPHP | PHP     |
+| ------- | ----------- |---------|
+| 1.*     | 2.*         | 8.1     |
 | 2.*     | 3.*         | \>= 8.1 |
+| 3.*     | 4.*         | \>= 8.1 |
 
 
 Install the package via composer:
@@ -55,6 +56,8 @@ return [
         'navigation_sort' => null,
         'navigation_count_badge' => false,
         'resource' => Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource::class,
+        'cluster' => null,
+        'sub_navigation_position' => null, // SubNavigationPosition::Top or ::Sidebar
     ],
     'pruning' => [
         'enabled' => true,

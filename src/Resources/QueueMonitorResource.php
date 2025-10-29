@@ -13,6 +13,8 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Pages\Enums\SubNavigationPosition;
+use Filament\Forms\Form;
+use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Resource;
 use Filament\Resources\Resource\Concerns\HasNavigation;
 use Filament\Schemas\Schema;
@@ -95,10 +97,11 @@ class QueueMonitorResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('status')
+                    ->label(__('filament-jobs-monitor::translations.status'))
                     ->options([
-                        'running' => 'Running',
-                        'succeeded' => 'Succeeded',
-                        'failed' => 'Failed',
+                        'running' => __('filament-jobs-monitor::translations.running'),
+                        'succeeded' => __('filament-jobs-monitor::translations.succeeded'),
+                        'failed' => __('filament-jobs-monitor::translations.failed'),
                     ])
                     ->query(function (Builder $query, array $data) {
                         if ($data['value'] === 'succeeded') {
@@ -135,6 +138,11 @@ class QueueMonitorResource extends Resource
     public static function getNavigationLabel(): string
     {
         return Str::title(static::getPluralModelLabel()) ?? Str::title(static::getModelLabel());
+    }
+
+    public static function getSubNavigationPosition(): SubNavigationPosition
+    {
+        return config('filament-jobs-monitor.resources.sub_navigation_position', static::$subNavigationPosition);
     }
 
     public static function getCluster(): ?string

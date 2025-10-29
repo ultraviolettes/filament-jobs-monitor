@@ -17,4 +17,7 @@ return [
     'queue' => 'القائمة',
     'progress' => 'التقدم',
     'started_at' => 'بدأت في',
+    'details' => 'التفاصيل',
+    'attempts' => 'المحاولات',
+    'exception' => 'Exception',
 ];

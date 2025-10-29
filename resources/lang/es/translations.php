@@ -18,4 +18,6 @@ return [
     'progress' => 'Progreso',
     'started_at' => 'Iniciado a las',
     'details' => 'Detalles',
+    'attempts' => 'Intentos',
+    'exception' => 'Exception',
 ];

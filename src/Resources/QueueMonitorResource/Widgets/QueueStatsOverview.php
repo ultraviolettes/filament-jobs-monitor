@@ -12,7 +12,7 @@ use Illuminate\Support\Number;
 
 class QueueStatsOverview extends BaseWidget
 {
-    protected function getCards(): array
+    protected function getStats(): array
     {
         $driver = DB::connection()->getConfig('driver');
 

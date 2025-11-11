@@ -26,4 +26,9 @@ class ListQueueMonitors extends ListRecords
     {
         return __('filament-jobs-monitor::translations.title');
     }
+
+    public static function getResource(): string
+    {
+        return config('filament-jobs-monitor.resources.resource') ?? static::$resource;
+    }
 }

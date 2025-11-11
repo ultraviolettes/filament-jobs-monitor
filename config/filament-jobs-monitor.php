@@ -12,6 +12,12 @@ return [
         'navigation_count_badge' => false,
         'resource' => Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource::class,
         'cluster' => null,
+        /**
+         * Configure the sub-navigation position for the resource pages.
+         * Options: Filament\Pages\Enums\SubNavigationPosition::Top or ::Sidebar
+         * Default: null (uses Filament default)
+         */
+        'sub_navigation_position' => null,
     ],
     'pruning' => [
         'enabled' => true,

@@ -6,15 +6,17 @@ use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
 use Croustibat\FilamentJobsMonitor\Models\QueueMonitor;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Pages\ListQueueMonitors;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Widgets\QueueStatsOverview;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\Action as FilamentTableAction;
-use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Resources\Resource\Concerns\HasNavigation;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -23,11 +25,13 @@ use Illuminate\Support\Str;
 
 class QueueMonitorResource extends Resource
 {
+    use HasNavigation;
+
     protected static ?string $model = QueueMonitor::class;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
                 TextInput::make('job_id')
                     ->required()
@@ -77,7 +81,7 @@ class QueueMonitorResource extends Resource
             ])
             ->defaultSort('started_at', 'desc')
             ->actions([
-                FilamentTableAction::make('details')
+                Action::make('details')
                     ->label(__('filament-jobs-monitor::translations.details'))
                     ->icon('heroicon-o-information-circle')
                     ->modalContent(fn (QueueMonitor $queueMonitor) => view('filament-jobs-monitor::queue-monitor-details', [
@@ -163,6 +167,15 @@ class QueueMonitorResource extends Resource
     public static function shouldRegisterNavigation(): bool
     {
         return FilamentJobsMonitorPlugin::get()->shouldRegisterNavigation();
+    }
+
+    public static function getSubNavigationPosition(): SubNavigationPosition
+    {
+        if (filled(config('filament-jobs-monitor.resources.sub_navigation_position'))) {
+            return config('filament-jobs-monitor.resources.sub_navigation_position');
+        }
+
+        return parent::getSubNavigationPosition();
     }
 
     public static function getNavigationIcon(): string

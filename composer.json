@@ -1,6 +1,6 @@
 {
     "name": "croustibat/filament-jobs-monitor",
-    "description": "Background Jobs monitoring like Horizon for all drivers for FilamentPHP",
+    "description": "Background Jobs monitoring like Horizon for all drivers for Filament (v4)",
     "keywords": [
         "croustibat",
         "laravel",

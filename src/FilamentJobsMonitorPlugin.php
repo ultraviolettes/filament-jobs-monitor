@@ -247,7 +247,7 @@ class FilamentJobsMonitorPlugin implements Plugin
      */
     public function shouldRegisterNavigation(): bool
     {
-        return (($this->evaluate($this->navigation)) ?? config('filament-jobs-monitor.resources.enabled')) === true ;
+        return (($this->evaluate($this->navigation)) ?? config('filament-jobs-monitor.resources.enabled')) === true;
     }
 
     /**

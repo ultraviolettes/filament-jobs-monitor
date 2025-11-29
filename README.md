@@ -1,29 +1,35 @@
 # Background Jobs monitoring like Horizon for all drivers for FilamentPHP
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/croustibat/filament-jobs-monitor.svg?style=flat-square)](https://packagist.org/packages/croustibat/filament-jobs-monitor)
-[![Total Downloads](https://img.shields.io/packagist/dt/croustibat/filament-jobs-monitor.svg?style=flat-square)](https://packagist.org/packages/croustibat/filament-jobs-monitor)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/fatrex/filament-jobs-monitor.svg?style=flat-square)](https://packagist.org/packages/fatrex/filament-jobs-monitor)
+[![Total Downloads](https://img.shields.io/packagist/dt/fatrex/filament-jobs-monitor.svg?style=flat-square)](https://packagist.org/packages/fatrex/filament-jobs-monitor)
 
-This is a package to monitor background jobs for FilamentPHP. It is inspired by Laravel Horizon and is compatible with all drivers.
+This is a package to monitor background jobs for FilamentPHP (v4). It is inspired by Laravel Horizon and is compatible with all drivers.
 
 <img width="800" alt="Screenshot 2023-09-13 at 23 18 44" src="https://github.com/croustibat/filament-jobs-monitor/assets/1169456/a5d5a088-865f-4265-bd37-13dce213f529">
 <img width="800" alt="Screenshot 2023-09-13 at 23 18 23" src="https://github.com/croustibat/filament-jobs-monitor/assets/1169456/e0a7730e-f459-4d99-8a40-5f35337385eb">
 
-
 ## Installation
 
-Check your filamentPHP version before installing:
+Check your FilamentPHP version before installing:
 
-| Version | FilamentPHP | PHP     |
-| ------- | ----------- |---------|
-| 1.*     | 2.*         | 8.1     |
-| 2.*     | 3.*         | \>= 8.1 |
-| 3.*     | 4.*         | \>= 8.1 |
+| Package | FilamentPHP | PHP    |
+| ------- | ----------- |--------|
+| 3.*     | 4.*         | >= 8.1 |
 
+> Acknowledgements & Filament v3 users
+>
+> Huge thanks to the original creator and maintainer, [Croustibat](https://github.com/croustibat). This package now targets Filament v4 only. If you need Filament v3 support, please use the original library: [croustibat/filament-jobs-monitor](https://github.com/croustibat/filament-jobs-monitor) (v2.*).
+
+## Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md) for local changes in this fork (v4-only).
+
+## Installation
 
 Install the package via composer:
 
 ```bash
-composer require croustibat/filament-jobs-monitor
+composer require fatrex/filament-jobs-monitor
 ```
 
 Publish and run the migrations using:
@@ -56,8 +62,6 @@ return [
         'navigation_sort' => null,
         'navigation_count_badge' => false,
         'resource' => Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource::class,
-        'cluster' => null,
-        'sub_navigation_position' => null, // SubNavigationPosition::Top or ::Sidebar
     ],
     'pruning' => [
         'enabled' => true,
@@ -162,7 +166,7 @@ Then you can call your Job with the following code:
             FilamentJobsMonitorPlugin::make()
                 ->enableNavigation(),
         ])
-````
+```
 
 Or you can use a closure to enable navigation only for specific users:
 
@@ -178,24 +182,6 @@ Or you can use a closure to enable navigation only for specific users:
         ])
 ```
 
-
-## Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## Contributing
-
-Please see [CONTRIBUTING](.github/CONTRIBUTING.md) for details.
-
-## Security Vulnerabilities
-
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
-
-## Credits
-
-- [Croustibat](https://github.com/croustibat)
-- [All Contributors](../../contributors)
-
-## License
-
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+> Note for Filament v3 users
+>
+> This package now targets Filament v4 only. If you need Filament v3 support, please use the original library we forked from: [croustibat/filament-jobs-monitor](https://github.com/croustibat/filament-jobs-monitor) (v2.*).

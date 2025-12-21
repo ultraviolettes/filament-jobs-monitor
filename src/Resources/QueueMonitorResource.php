@@ -62,7 +62,9 @@ class QueueMonitorResource extends Resource
                         'running' => 'primary',
                         'succeeded' => 'success',
                         'failed' => 'danger',
-                    }),
+                    })
+                    ->sortable(false)
+                    ->searchable(false),
                 TextColumn::make('name')
                     ->label(__('filament-jobs-monitor::translations.name'))
                     ->sortable(),

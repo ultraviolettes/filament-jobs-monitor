@@ -105,7 +105,7 @@ class FilamentJobsMonitorPlugin implements Plugin
      */
     public static function get(): static
     {
-        return filament(app(static::class)->getId());
+        return app(static::class);
     }
 
     /**

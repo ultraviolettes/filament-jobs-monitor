@@ -3,7 +3,10 @@
 namespace Croustibat\FilamentJobsMonitor\Resources;
 
 use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
+use Croustibat\FilamentJobsMonitor\Models\FailedJob;
+use Croustibat\FilamentJobsMonitor\Models\QueueJob;
 use Croustibat\FilamentJobsMonitor\Models\QueueMonitor;
+use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Pages\ListPendingJobs;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Pages\ListQueueMonitors;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Widgets\QueueStatsOverview;
 use Filament\Actions\Action;
@@ -12,6 +15,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Resource;
 use Filament\Resources\Resource\Concerns\HasNavigation;
@@ -20,6 +24,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 
 class QueueMonitorResource extends Resource
@@ -82,6 +87,33 @@ class QueueMonitorResource extends Resource
             ])
             ->defaultSort('started_at', 'desc')
             ->actions([
+                Action::make('retry')
+                    ->label(__('filament-jobs-monitor::translations.retry'))
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->visible(fn (QueueMonitor $record): bool => $record->hasFailed())
+                    ->action(function (QueueMonitor $record): void {
+                        $failedJob = FailedJob::where('uuid', $record->job_id)->first();
+
+                        if (! $failedJob) {
+                            Notification::make()
+                                ->title(__('filament-jobs-monitor::translations.retry_failed'))
+                                ->body(__('filament-jobs-monitor::translations.retry_failed_description'))
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+
+                        Artisan::call('queue:retry', ['id' => [$failedJob->uuid]]);
+
+                        Notification::make()
+                            ->title(__('filament-jobs-monitor::translations.retry_success'))
+                            ->body(__('filament-jobs-monitor::translations.retry_success_description'))
+                            ->success()
+                            ->send();
+                    }),
                 Action::make('details')
                     ->label(__('filament-jobs-monitor::translations.details'))
                     ->icon('heroicon-o-information-circle')
@@ -181,9 +213,15 @@ class QueueMonitorResource extends Resource
 
     public static function getPages(): array
     {
-        return [
+        $pages = [
             'index' => ListQueueMonitors::route('/'),
         ];
+
+        if (QueueJob::isSupported()) {
+            $pages['pending'] = ListPendingJobs::route('/pending');
+        }
+
+        return $pages;
     }
 
     public static function getWidgets(): array

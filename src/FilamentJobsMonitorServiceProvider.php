@@ -17,4 +17,9 @@ class FilamentJobsMonitorServiceProvider extends PackageServiceProvider
             ->hasTranslations()
             ->hasMigration('create_filament-jobs-monitor_table');
     }
+
+    public function packageRegistered(): void
+    {
+        $this->app->singleton(FilamentJobsMonitorPlugin::class);
+    }
 }

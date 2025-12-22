@@ -18,7 +18,7 @@ class ListPendingJobs extends Page implements HasTable
 
     protected static string $resource = QueueMonitorResource::class;
 
-    protected static string $view = 'filament-jobs-monitor::pending-jobs';
+    protected string $view = 'filament-jobs-monitor::pending-jobs';
 
     public static function getNavigationLabel(): string
     {
@@ -79,7 +79,7 @@ class ListPendingJobs extends Page implements HasTable
             ->emptyStateDescription(__('filament-jobs-monitor::translations.no_pending_jobs_description'));
     }
 
-    public static function canAccess(): bool
+    public static function canAccess(array $parameters = []): bool
     {
         return QueueJob::isSupported();
     }

@@ -4,9 +4,9 @@ namespace Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Pages;
 
 use Croustibat\FilamentJobsMonitor\Models\QueueJob;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource;
-use Filament\Resources\Pages\Page;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Resources\Pages\Page;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;

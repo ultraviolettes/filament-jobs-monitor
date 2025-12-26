@@ -2,6 +2,7 @@
 
 namespace Croustibat\FilamentJobsMonitor\Resources;
 
+use Croustibat\FilamentJobsMonitor\Columns\ProgressColumn;
 use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
 use Croustibat\FilamentJobsMonitor\Models\FailedJob;
 use Croustibat\FilamentJobsMonitor\Models\QueueJob;
@@ -76,9 +77,8 @@ class QueueMonitorResource extends Resource
                 TextColumn::make('queue')
                     ->label(__('filament-jobs-monitor::translations.queue'))
                     ->sortable(),
-                TextColumn::make('progress')
+                ProgressColumn::make('progress')
                     ->label(__('filament-jobs-monitor::translations.progress'))
-                    ->formatStateUsing(fn (string $state) => "{$state}%")
                     ->sortable(),
                 TextColumn::make('started_at')
                     ->label(__('filament-jobs-monitor::translations.started_at'))

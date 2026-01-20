@@ -10,8 +10,6 @@ use Croustibat\FilamentJobsMonitor\Models\QueueMonitor;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Pages\ListPendingJobs;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Pages\ListQueueMonitors;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Widgets\QueueStatsOverview;
-use Filament\Actions\Action;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -21,10 +19,14 @@ use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Resource;
 use Filament\Resources\Resource\Concerns\HasNavigation;
 use Filament\Schemas\Schema;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 
@@ -125,6 +127,55 @@ class QueueMonitorResource extends Resource
                     ->modalSubmitAction(false),
             ])
             ->bulkActions([
+                BulkAction::make('retry')
+                    ->label(__('filament-jobs-monitor::translations.retry'))
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->deselectRecordsAfterCompletion()
+                    ->action(function (Collection $records): void {
+                        $failedRecords = $records->filter(fn (QueueMonitor $record) => $record->hasFailed());
+
+                        if ($failedRecords->isEmpty()) {
+                            Notification::make()
+                                ->title(__('filament-jobs-monitor::translations.no_failed_jobs'))
+                                ->body(__('filament-jobs-monitor::translations.no_failed_jobs_description'))
+                                ->warning()
+                                ->send();
+
+                            return;
+                        }
+
+                        $retriedCount = 0;
+                        $failedCount = 0;
+
+                        foreach ($failedRecords as $record) {
+                            $failedJob = FailedJob::where('uuid', $record->job_id)->first();
+
+                            if ($failedJob) {
+                                Artisan::call('queue:retry', ['id' => [$failedJob->uuid]]);
+                                $retriedCount++;
+                            } else {
+                                $failedCount++;
+                            }
+                        }
+
+                        if ($retriedCount > 0) {
+                            Notification::make()
+                                ->title(__('filament-jobs-monitor::translations.bulk_retry_success'))
+                                ->body(trans_choice('filament-jobs-monitor::translations.bulk_retry_success_description', $retriedCount, ['count' => $retriedCount]))
+                                ->success()
+                                ->send();
+                        }
+
+                        if ($failedCount > 0) {
+                            Notification::make()
+                                ->title(__('filament-jobs-monitor::translations.bulk_retry_partial'))
+                                ->body(trans_choice('filament-jobs-monitor::translations.bulk_retry_partial_description', $failedCount, ['count' => $failedCount]))
+                                ->warning()
+                                ->send();
+                        }
+                    }),
                 DeleteBulkAction::make(),
             ])
             ->filters([

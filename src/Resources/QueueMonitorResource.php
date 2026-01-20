@@ -178,6 +178,36 @@ class QueueMonitorResource extends Resource
                     }),
                 DeleteBulkAction::make(),
             ])
+            ->headerActions([
+                Action::make('retry_all_failed')
+                    ->label(__('filament-jobs-monitor::translations.retry_all_failed'))
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->modalDescription(__('filament-jobs-monitor::translations.retry_all_failed_confirmation'))
+                    ->visible(fn (): bool => FailedJob::count() > 0)
+                    ->action(function (): void {
+                        $failedJobsCount = FailedJob::count();
+
+                        if ($failedJobsCount === 0) {
+                            Notification::make()
+                                ->title(__('filament-jobs-monitor::translations.no_failed_jobs_to_retry'))
+                                ->body(__('filament-jobs-monitor::translations.no_failed_jobs_to_retry_description'))
+                                ->warning()
+                                ->send();
+
+                            return;
+                        }
+
+                        Artisan::call('queue:retry', ['id' => ['all']]);
+
+                        Notification::make()
+                            ->title(__('filament-jobs-monitor::translations.retry_all_success'))
+                            ->body(trans_choice('filament-jobs-monitor::translations.retry_all_success_description', $failedJobsCount, ['count' => $failedJobsCount]))
+                            ->success()
+                            ->send();
+                    }),
+            ])
             ->filters([
                 SelectFilter::make('status')
                     ->label(__('filament-jobs-monitor::translations.status'))

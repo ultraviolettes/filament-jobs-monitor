@@ -4,6 +4,7 @@ namespace Croustibat\FilamentJobsMonitor\Resources;
 
 use Croustibat\FilamentJobsMonitor\Columns\ProgressColumn;
 use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
+use Croustibat\FilamentJobsMonitor\Jobs\RetryFailedJobJob;
 use Croustibat\FilamentJobsMonitor\Models\FailedJob;
 use Croustibat\FilamentJobsMonitor\Models\QueueJob;
 use Croustibat\FilamentJobsMonitor\Models\QueueMonitor;
@@ -93,9 +94,17 @@ class QueueMonitorResource extends Resource
                     ->label(__('filament-jobs-monitor::translations.retry'))
                     ->icon('heroicon-o-arrow-path')
                     ->color('warning')
-                    ->requiresConfirmation()
+                    ->form([
+                        TextInput::make('delay')
+                            ->label(__('filament-jobs-monitor::translations.delay_in_minutes'))
+                            ->helperText(__('filament-jobs-monitor::translations.delay_helper'))
+                            ->numeric()
+                            ->default(0)
+                            ->minValue(0)
+                            ->suffix(__('filament-jobs-monitor::translations.minutes')),
+                    ])
                     ->visible(fn (QueueMonitor $record): bool => $record->hasFailed())
-                    ->action(function (QueueMonitor $record): void {
+                    ->action(function (QueueMonitor $record, array $data): void {
                         $failedJob = FailedJob::where('uuid', $record->job_id)->first();
 
                         if (! $failedJob) {
@@ -108,13 +117,25 @@ class QueueMonitorResource extends Resource
                             return;
                         }
 
-                        Artisan::call('queue:retry', ['id' => [$failedJob->uuid]]);
+                        $delay = (int) ($data['delay'] ?? 0);
 
-                        Notification::make()
-                            ->title(__('filament-jobs-monitor::translations.retry_success'))
-                            ->body(__('filament-jobs-monitor::translations.retry_success_description'))
-                            ->success()
-                            ->send();
+                        if ($delay > 0) {
+                            RetryFailedJobJob::dispatch([$failedJob->uuid])->delay(now()->addMinutes($delay));
+
+                            Notification::make()
+                                ->title(__('filament-jobs-monitor::translations.retry_scheduled'))
+                                ->body(__('filament-jobs-monitor::translations.retry_scheduled_description', ['minutes' => $delay]))
+                                ->success()
+                                ->send();
+                        } else {
+                            Artisan::call('queue:retry', ['id' => [$failedJob->uuid]]);
+
+                            Notification::make()
+                                ->title(__('filament-jobs-monitor::translations.retry_success'))
+                                ->body(__('filament-jobs-monitor::translations.retry_success_description'))
+                                ->success()
+                                ->send();
+                        }
                     }),
                 Action::make('details')
                     ->label(__('filament-jobs-monitor::translations.details'))
@@ -131,9 +152,17 @@ class QueueMonitorResource extends Resource
                     ->label(__('filament-jobs-monitor::translations.retry'))
                     ->icon('heroicon-o-arrow-path')
                     ->color('warning')
-                    ->requiresConfirmation()
+                    ->form([
+                        TextInput::make('delay')
+                            ->label(__('filament-jobs-monitor::translations.delay_in_minutes'))
+                            ->helperText(__('filament-jobs-monitor::translations.delay_helper'))
+                            ->numeric()
+                            ->default(0)
+                            ->minValue(0)
+                            ->suffix(__('filament-jobs-monitor::translations.minutes')),
+                    ])
                     ->deselectRecordsAfterCompletion()
-                    ->action(function (Collection $records): void {
+                    ->action(function (Collection $records, array $data): void {
                         $failedRecords = $records->filter(fn (QueueMonitor $record) => $record->hasFailed());
 
                         if ($failedRecords->isEmpty()) {
@@ -146,26 +175,38 @@ class QueueMonitorResource extends Resource
                             return;
                         }
 
-                        $retriedCount = 0;
+                        $delay = (int) ($data['delay'] ?? 0);
+                        $uuids = [];
                         $failedCount = 0;
 
                         foreach ($failedRecords as $record) {
                             $failedJob = FailedJob::where('uuid', $record->job_id)->first();
 
                             if ($failedJob) {
-                                Artisan::call('queue:retry', ['id' => [$failedJob->uuid]]);
-                                $retriedCount++;
+                                $uuids[] = $failedJob->uuid;
                             } else {
                                 $failedCount++;
                             }
                         }
 
-                        if ($retriedCount > 0) {
-                            Notification::make()
-                                ->title(__('filament-jobs-monitor::translations.bulk_retry_success'))
-                                ->body(trans_choice('filament-jobs-monitor::translations.bulk_retry_success_description', $retriedCount, ['count' => $retriedCount]))
-                                ->success()
-                                ->send();
+                        if (count($uuids) > 0) {
+                            if ($delay > 0) {
+                                RetryFailedJobJob::dispatch($uuids)->delay(now()->addMinutes($delay));
+
+                                Notification::make()
+                                    ->title(__('filament-jobs-monitor::translations.bulk_retry_scheduled'))
+                                    ->body(__('filament-jobs-monitor::translations.bulk_retry_scheduled_description', ['count' => count($uuids), 'minutes' => $delay]))
+                                    ->success()
+                                    ->send();
+                            } else {
+                                Artisan::call('queue:retry', ['id' => $uuids]);
+
+                                Notification::make()
+                                    ->title(__('filament-jobs-monitor::translations.bulk_retry_success'))
+                                    ->body(trans_choice('filament-jobs-monitor::translations.bulk_retry_success_description', count($uuids), ['count' => count($uuids)]))
+                                    ->success()
+                                    ->send();
+                            }
                         }
 
                         if ($failedCount > 0) {
@@ -183,10 +224,17 @@ class QueueMonitorResource extends Resource
                     ->label(__('filament-jobs-monitor::translations.retry_all_failed'))
                     ->icon('heroicon-o-arrow-path')
                     ->color('warning')
-                    ->requiresConfirmation()
-                    ->modalDescription(__('filament-jobs-monitor::translations.retry_all_failed_confirmation'))
+                    ->form([
+                        TextInput::make('delay')
+                            ->label(__('filament-jobs-monitor::translations.delay_in_minutes'))
+                            ->helperText(__('filament-jobs-monitor::translations.delay_helper'))
+                            ->numeric()
+                            ->default(0)
+                            ->minValue(0)
+                            ->suffix(__('filament-jobs-monitor::translations.minutes')),
+                    ])
                     ->visible(fn (): bool => FailedJob::count() > 0)
-                    ->action(function (): void {
+                    ->action(function (array $data): void {
                         $failedJobsCount = FailedJob::count();
 
                         if ($failedJobsCount === 0) {
@@ -199,13 +247,25 @@ class QueueMonitorResource extends Resource
                             return;
                         }
 
-                        Artisan::call('queue:retry', ['id' => ['all']]);
+                        $delay = (int) ($data['delay'] ?? 0);
 
-                        Notification::make()
-                            ->title(__('filament-jobs-monitor::translations.retry_all_success'))
-                            ->body(trans_choice('filament-jobs-monitor::translations.retry_all_success_description', $failedJobsCount, ['count' => $failedJobsCount]))
-                            ->success()
-                            ->send();
+                        if ($delay > 0) {
+                            RetryFailedJobJob::dispatch('all')->delay(now()->addMinutes($delay));
+
+                            Notification::make()
+                                ->title(__('filament-jobs-monitor::translations.retry_all_scheduled'))
+                                ->body(__('filament-jobs-monitor::translations.retry_all_scheduled_description', ['count' => $failedJobsCount, 'minutes' => $delay]))
+                                ->success()
+                                ->send();
+                        } else {
+                            Artisan::call('queue:retry', ['id' => ['all']]);
+
+                            Notification::make()
+                                ->title(__('filament-jobs-monitor::translations.retry_all_success'))
+                                ->body(trans_choice('filament-jobs-monitor::translations.retry_all_success_description', $failedJobsCount, ['count' => $failedJobsCount]))
+                                ->success()
+                                ->send();
+                        }
                     }),
             ])
             ->filters([

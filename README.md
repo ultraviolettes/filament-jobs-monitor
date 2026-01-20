@@ -5,8 +5,9 @@
 
 This is a package to monitor background jobs for FilamentPHP. It is inspired by Laravel Horizon and is compatible with all drivers.
 
-<img width="800" alt="Screenshot 2023-09-13 at 23 18 44" src="https://github.com/croustibat/filament-jobs-monitor/assets/1169456/a5d5a088-865f-4265-bd37-13dce213f529">
-<img width="800" alt="Screenshot 2023-09-13 at 23 18 23" src="https://github.com/croustibat/filament-jobs-monitor/assets/1169456/e0a7730e-f459-4d99-8a40-5f35337385eb">
+![Jobs List](art/screenshot-list.png)
+
+![Job Progress](art/screenshot-progress-75.png)
 
 
 ## Installation

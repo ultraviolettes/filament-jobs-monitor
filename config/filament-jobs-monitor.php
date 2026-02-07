@@ -1,6 +1,9 @@
 <?php
 
 return [
+
+    'connection' => env('DB_CONNECTION', 'mysql'),
+
     'resources' => [
         'enabled' => true,
         'label' => 'Job',

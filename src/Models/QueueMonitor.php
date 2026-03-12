@@ -3,12 +3,14 @@
 namespace Croustibat\FilamentJobsMonitor\Models;
 
 use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
+use Filament\Facades\Filament;
 use Illuminate\Contracts\Queue\Job as JobContract;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Prunable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Hash;
 
 class QueueMonitor extends Model
@@ -25,6 +27,7 @@ class QueueMonitor extends Model
         'attempt',
         'progress',
         'exception_message',
+        'tenant_id',
     ];
 
     protected $casts = [
@@ -32,6 +35,29 @@ class QueueMonitor extends Model
         'started_at' => 'datetime',
         'finished_at' => 'datetime',
     ];
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope('tenant', function (Builder $query) {
+            if (config('filament-jobs-monitor.tenancy.enabled') && Filament::getTenant()) {
+                $column = config('filament-jobs-monitor.tenancy.column', 'tenant_id');
+                $query->where($column, Filament::getTenant()->getKey());
+            }
+        });
+    }
+
+    /*
+     *--------------------------------------------------------------------------
+     * Relationships
+     *--------------------------------------------------------------------------
+     */
+
+    public function tenant(): BelongsTo
+    {
+        $model = config('filament-jobs-monitor.tenancy.model');
+
+        return $this->belongsTo($model);
+    }
 
     /*
      *--------------------------------------------------------------------------

@@ -68,6 +68,11 @@ return [
     'queues' => [
         'default'
     ],
+    'tenancy' => [
+        'enabled' => false,
+        'model' => null, // e.g., App\Models\Tenant::class
+        'column' => 'tenant_id',
+    ],
 ];
 ```
 
@@ -94,6 +99,64 @@ Then you can extend the model by adding your own methods :
     class MyQueueMonitor extends CroustibatQueueMonitor {}
 
 ```
+
+### Multi-Tenancy Support
+
+This plugin supports multi-tenancy for applications using Filament's built-in tenant functionality. When enabled, job monitors are automatically filtered by the current tenant.
+
+**Features:**
+- Automatically associates jobs with tenants based on a `tenantId` property in your job class
+- Filters the job monitor list to show only jobs for the current tenant
+- Filters pending jobs and failed jobs by tenant (via payload inspection)
+- Backwards compatible - disabled by default
+
+**Configuration:**
+
+Enable multi-tenancy in your published config file:
+
+```php
+'tenancy' => [
+    'enabled' => true,
+    'model' => App\Models\Tenant::class,  // Your tenant model
+    'column' => 'tenant_id',              // Column name in queue_monitors table
+],
+```
+
+**Migration:**
+
+If you enable tenancy after initial installation, re-publish and run the migration to add the `tenant_id` column:
+
+```bash
+php artisan vendor:publish --tag="filament-jobs-monitor-migrations" --force
+php artisan migrate
+```
+
+**Job Requirements:**
+
+For jobs to be associated with a tenant, they must have a public `tenantId` property:
+
+```php
+class MyTenantJob implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public function __construct(
+        public int $tenantId,  // Required for multi-tenancy
+        // ... other properties
+    ) {}
+}
+```
+
+When dispatching the job, pass the current tenant ID:
+
+```php
+MyTenantJob::dispatch(
+    tenantId: Filament::getTenant()->id,
+    // ... other arguments
+);
+```
+
+See [examples/TenantAwareExportJob.php](./examples/TenantAwareExportJob.php) for a complete example.
 
 ### Using Filament Panels
 

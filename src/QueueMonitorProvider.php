@@ -38,6 +38,11 @@ class QueueMonitorProvider extends ServiceProvider
         });
     }
 
+    protected static function getConnection(): string
+    {
+        return config('filament-jobs-monitor.connection') ?? config('database.default');
+    }
+
     /**
      * Get Job ID.
      */
@@ -54,7 +59,7 @@ class QueueMonitorProvider extends ServiceProvider
         $now = now();
         $jobId = self::getJobId($job);
 
-        $monitor = QueueMonitor::query()->create([
+        $monitor = QueueMonitor::on(self::getConnection())->create([
             'job_id' => $jobId,
             'name' => $job->resolveName(),
             'queue' => $job->getQueue(),
@@ -63,7 +68,7 @@ class QueueMonitorProvider extends ServiceProvider
             'progress' => 0,
         ]);
 
-        QueueMonitor::query()
+        QueueMonitor::on(self::getConnection())
             ->where('id', '!=', $monitor->id)
             ->where('job_id', $jobId)
             ->where('failed', false)
@@ -80,7 +85,7 @@ class QueueMonitorProvider extends ServiceProvider
      */
     protected static function jobFinished(JobContract $job, bool $failed = false, ?\Throwable $exception = null): void
     {
-        $monitor = QueueMonitor::query()
+        $monitor = QueueMonitor::on(self::getConnection())
             ->where('job_id', self::getJobId($job))
             ->where('attempt', $job->attempts())
             ->orderByDesc('started_at')

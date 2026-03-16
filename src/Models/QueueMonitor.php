@@ -15,6 +15,11 @@ class QueueMonitor extends Model
 {
     use HasFactory, Prunable;
 
+    public function getConnectionName()
+    {
+        return config('filament-jobs-monitor.connection') ?? parent::getConnectionName();
+    }
+
     protected $fillable = [
         'job_id',
         'name',

@@ -1,6 +1,9 @@
 <?php
 
 return [
+
+    'connection' => null,
+
     'resources' => [
         'enabled' => true,
         'label' => 'Job',

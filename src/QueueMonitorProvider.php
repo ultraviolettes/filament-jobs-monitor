@@ -52,12 +52,37 @@ class QueueMonitorProvider extends ServiceProvider
     }
 
     /**
+     * Extract tenant ID from job payload.
+     */
+    protected static function getTenantIdFromJob(JobContract $job): ?int
+    {
+        if (! config('filament-jobs-monitor.tenancy.enabled')) {
+            return null;
+        }
+
+        $payload = $job->payload();
+
+        if (! isset($payload['data']['command'])) {
+            return null;
+        }
+
+        try {
+            $command = unserialize($payload['data']['command']);
+
+            return $command->tenantId ?? null;
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /**
      * Start Queue Monitoring for Job.
      */
     protected static function jobStarted(JobContract $job): void
     {
         $now = now();
         $jobId = self::getJobId($job);
+        $tenantId = self::getTenantIdFromJob($job);
 
         $monitor = QueueMonitor::on(self::getConnection())->create([
             'job_id' => $jobId,
@@ -66,6 +91,7 @@ class QueueMonitorProvider extends ServiceProvider
             'started_at' => $now,
             'attempt' => $job->attempts(),
             'progress' => 0,
+            'tenant_id' => $tenantId,
         ]);
 
         QueueMonitor::on(self::getConnection())

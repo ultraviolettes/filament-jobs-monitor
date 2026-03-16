@@ -2,6 +2,7 @@
 
 namespace Croustibat\FilamentJobsMonitor\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class QueueJob extends Model
@@ -57,5 +58,12 @@ class QueueJob extends Model
         $driver = config('queue.default');
 
         return $driver === 'database';
+    }
+
+    public function scopeForTenant(Builder $query, int $tenantId): Builder
+    {
+        $column = config('filament-jobs-monitor.tenancy.column', 'tenant_id');
+
+        return $query->where('payload', 'LIKE', '%"'.$column.'";i:'.$tenantId.';%');
     }
 }

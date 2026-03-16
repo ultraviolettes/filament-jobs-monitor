@@ -26,11 +26,18 @@
         "spatie/laravel-package-tools": "^1.13.5"
     },
     "require-dev": {
-        "laravel/pint": "^1.0"
+        "laravel/pint": "^1.0",
+        "orchestra/testbench": "^10.10",
+        "pestphp/pest": "*"
     },
     "autoload": {
         "psr-4": {
             "Croustibat\\FilamentJobsMonitor\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Croustibat\\FilamentJobsMonitor\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -39,7 +46,8 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            "composer/package-versions-deprecated": true
+            "composer/package-versions-deprecated": true,
+            "pestphp/pest-plugin": true
         }
     },
     "extra": {

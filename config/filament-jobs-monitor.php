@@ -29,4 +29,9 @@ return [
     'queues' => [
         'default',
     ],
+    'tenancy' => [
+        'enabled' => false,
+        'model' => null,
+        'column' => 'tenant_id',
+    ],
 ];

@@ -6,6 +6,7 @@ use Croustibat\FilamentJobsMonitor\Models\QueueJob;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Facades\Filament;
 use Filament\Resources\Pages\Page;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
@@ -32,8 +33,14 @@ class ListPendingJobs extends Page implements HasTable
 
     public function table(Table $table): Table
     {
+        $query = QueueJob::query();
+
+        if (config('filament-jobs-monitor.tenancy.enabled') && Filament::getTenant()) {
+            $query->forTenant(Filament::getTenant()->getKey());
+        }
+
         return $table
-            ->query(QueueJob::query())
+            ->query($query)
             ->columns([
                 TextColumn::make('status')
                     ->badge()

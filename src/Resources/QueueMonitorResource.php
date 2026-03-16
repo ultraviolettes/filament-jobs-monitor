@@ -2,6 +2,7 @@
 
 namespace Croustibat\FilamentJobsMonitor\Resources;
 
+use UnitEnum;
 use Croustibat\FilamentJobsMonitor\Columns\ProgressColumn;
 use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
 use Croustibat\FilamentJobsMonitor\Jobs\RetryFailedJobJob;
@@ -318,7 +319,7 @@ class QueueMonitorResource extends Resource
         return config('filament-jobs-monitor.resources.cluster');
     }
 
-    public static function getNavigationGroup(): ?string
+    public static function getNavigationGroup(): null|string|UnitEnum
     {
         return FilamentJobsMonitorPlugin::get()->getNavigationGroup();
     }

@@ -16,8 +16,6 @@ Check your filamentPHP version before installing:
 
 | Version | FilamentPHP | PHP     |
 | ------- | ----------- |---------|
-| 1.*     | 2.*         | 8.1     |
-| 2.*     | 3.*         | \>= 8.1 |
 | 3.*     | 4.*         | \>= 8.1 |
 | 4.*     | 5.*         | \>= 8.2 |
 

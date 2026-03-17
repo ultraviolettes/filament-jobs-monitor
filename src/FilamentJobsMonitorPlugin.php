@@ -3,10 +3,10 @@
 namespace Croustibat\FilamentJobsMonitor;
 
 use Closure;
-use UnitEnum;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
+use UnitEnum;
 
 class FilamentJobsMonitorPlugin implements Plugin
 {

@@ -35,18 +35,18 @@ class ListQueueMonitors extends ListRecords
         return [
             'all' => Tab::make(__('filament-jobs-monitor::translations.all_jobs'))
                 ->icon('heroicon-o-queue-list')
-                ->badge(QueueMonitor::count()),
+                ->badge(resolve(QueueMonitor::class)->count()),
             'running' => Tab::make(__('filament-jobs-monitor::translations.running'))
                 ->icon('heroicon-o-arrow-path')
-                ->badge(QueueMonitor::whereNull('finished_at')->count())
+                ->badge(resolve(QueueMonitor::class)->whereNull('finished_at')->count())
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereNull('finished_at')),
             'succeeded' => Tab::make(__('filament-jobs-monitor::translations.succeeded'))
                 ->icon('heroicon-o-check-circle')
-                ->badge(QueueMonitor::whereNotNull('finished_at')->where('failed', false)->count())
+                ->badge(resolve(QueueMonitor::class)->whereNotNull('finished_at')->where('failed', false)->count())
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereNotNull('finished_at')->where('failed', false)),
             'failed' => Tab::make(__('filament-jobs-monitor::translations.failed'))
                 ->icon('heroicon-o-x-circle')
-                ->badge(QueueMonitor::whereNotNull('finished_at')->where('failed', true)->count())
+                ->badge(resolve(QueueMonitor::class)->whereNotNull('finished_at')->where('failed', true)->count())
                 ->badgeColor('danger')
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereNotNull('finished_at')->where('failed', true)),
         ];

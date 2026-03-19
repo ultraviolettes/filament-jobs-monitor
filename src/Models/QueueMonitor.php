@@ -3,6 +3,7 @@
 namespace Croustibat\FilamentJobsMonitor\Models;
 
 use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
+use Filament\Facades\Filament;
 use Illuminate\Contracts\Queue\Job as JobContract;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -47,7 +48,7 @@ class QueueMonitor extends Model
                 return;
             }
 
-            if (! class_exists(\Filament\Facades\Filament::class)) {
+            if (! class_exists(Filament::class)) {
                 return;
             }
 
@@ -55,7 +56,7 @@ class QueueMonitor extends Model
                 return;
             }
 
-            $tenant = \Filament\Facades\Filament::getTenant();
+            $tenant = Filament::getTenant();
 
             if ($tenant) {
                 $column = config('filament-jobs-monitor.tenancy.column', 'tenant_id');
@@ -142,7 +143,7 @@ class QueueMonitor extends Model
     /**
      * Get the prunable model query.
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function prunable(): Builder|bool
     {

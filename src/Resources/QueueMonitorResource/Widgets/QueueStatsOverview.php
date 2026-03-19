@@ -23,7 +23,7 @@ class QueueStatsOverview extends BaseWidget
             DB::raw($this->buildAggregateMode('AVG', 'finished_at', 'started_at', $driver).' as average_time_elapsed'),
         ];
 
-        $aggregatedInfo = QueueMonitor::query()
+        $aggregatedInfo = resolve(QueueMonitor::class)->query()
             ->select($aggregationColumns)
             ->first();
 
@@ -39,8 +39,8 @@ class QueueStatsOverview extends BaseWidget
         $failedPerDay = $this->getFailedJobsPerDay(7);
         $succeededPerDay = $this->getSucceededJobsPerDay(7);
 
-        $succeededCount = QueueMonitor::whereNotNull('finished_at')->where('failed', false)->count();
-        $failedCount = QueueMonitor::whereNotNull('finished_at')->where('failed', true)->count();
+        $succeededCount = resolve(QueueMonitor::class)->whereNotNull('finished_at')->where('failed', false)->count();
+        $failedCount = resolve(QueueMonitor::class)->whereNotNull('finished_at')->where('failed', true)->count();
 
         return [
             Stat::make(__('filament-jobs-monitor::translations.total_jobs'), $totalJobs)
@@ -70,7 +70,7 @@ class QueueStatsOverview extends BaseWidget
         $data = [];
         for ($i = $days - 1; $i >= 0; $i--) {
             $date = Carbon::now()->subDays($i)->toDateString();
-            $data[] = QueueMonitor::whereDate('created_at', $date)->count();
+            $data[] = resolve(QueueMonitor::class)->whereDate('created_at', $date)->count();
         }
 
         return $data;
@@ -81,7 +81,7 @@ class QueueStatsOverview extends BaseWidget
         $data = [];
         for ($i = $days - 1; $i >= 0; $i--) {
             $date = Carbon::now()->subDays($i)->toDateString();
-            $data[] = QueueMonitor::whereDate('created_at', $date)
+            $data[] = resolve(QueueMonitor::class)->whereDate('created_at', $date)
                 ->whereNotNull('finished_at')
                 ->where('failed', false)
                 ->count();
@@ -95,7 +95,7 @@ class QueueStatsOverview extends BaseWidget
         $data = [];
         for ($i = $days - 1; $i >= 0; $i--) {
             $date = Carbon::now()->subDays($i)->toDateString();
-            $data[] = QueueMonitor::whereDate('created_at', $date)
+            $data[] = resolve(QueueMonitor::class)->whereDate('created_at', $date)
                 ->whereNotNull('finished_at')
                 ->where('failed', true)
                 ->count();

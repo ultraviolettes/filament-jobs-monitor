@@ -37,11 +37,11 @@ trait QueueProgress
             return null;
         }
 
-        if (! $jobId = QueueMonitor::getJobId($this->job)) {
+        if (! $jobId = resolve(QueueMonitor::class)::getJobId($this->job)) {
             return null;
         }
 
-        $model = QueueMonitor::getModel();
+        $model = resolve(QueueMonitor::class)::getModel();
 
         return $model::whereJobId($jobId)
             ->orderBy('started_at', 'desc')

@@ -75,6 +75,8 @@ class QueueMonitorResource extends Resource
                     })
                     ->sortable(false)
                     ->searchable(false),
+                TextColumn::make('tenant_id')
+                    ->visible(config('filament-jobs-monitor.tenancy.enabled')),
                 TextColumn::make('name')
                     ->label(__('filament-jobs-monitor::translations.name'))
                     ->sortable(),

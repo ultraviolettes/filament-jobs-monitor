@@ -48,7 +48,7 @@ class QueueMonitorProvider extends ServiceProvider
      */
     public static function getJobId(JobContract $job): string|int
     {
-        return QueueMonitor::getJobId($job);
+        return resolve(QueueMonitor::class)::getJobId($job);
     }
 
     /**
@@ -84,7 +84,7 @@ class QueueMonitorProvider extends ServiceProvider
         $jobId = self::getJobId($job);
         $tenantId = self::getTenantIdFromJob($job);
 
-        $monitor = QueueMonitor::on(self::getConnection())->create([
+        $monitor = resolve(QueueMonitor::class)::on(self::getConnection())->create([
             'job_id' => $jobId,
             'name' => $job->resolveName(),
             'queue' => $job->getQueue(),
@@ -94,12 +94,12 @@ class QueueMonitorProvider extends ServiceProvider
             'tenant_id' => $tenantId,
         ]);
 
-        QueueMonitor::on(self::getConnection())
+        resolve(QueueMonitor::class)::on(self::getConnection())
             ->where('id', '!=', $monitor->id)
             ->where('job_id', $jobId)
             ->where('failed', false)
             ->whereNull('finished_at')
-            ->each(function (QueueMonitor $monitor) {
+            ->each(function ($monitor) {
                 $monitor->finished_at = now();
                 $monitor->failed = true;
                 $monitor->save();
@@ -111,7 +111,7 @@ class QueueMonitorProvider extends ServiceProvider
      */
     protected static function jobFinished(JobContract $job, bool $failed = false, ?\Throwable $exception = null): void
     {
-        $monitor = QueueMonitor::on(self::getConnection())
+        $monitor = resolve(QueueMonitor::class)::on(self::getConnection())
             ->where('job_id', self::getJobId($job))
             ->where('attempt', $job->attempts())
             ->orderByDesc('started_at')

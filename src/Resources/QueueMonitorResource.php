@@ -2,7 +2,6 @@
 
 namespace Croustibat\FilamentJobsMonitor\Resources;
 
-use UnitEnum;
 use Croustibat\FilamentJobsMonitor\Columns\ProgressColumn;
 use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
 use Croustibat\FilamentJobsMonitor\Jobs\RetryFailedJobJob;
@@ -31,12 +30,18 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
+use UnitEnum;
 
 class QueueMonitorResource extends Resource
 {
     use HasNavigation;
 
     protected static ?string $model = QueueMonitor::class;
+
+    public static function getModel(): string
+    {
+        return resolve(QueueMonitor::class);
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -106,8 +111,8 @@ class QueueMonitorResource extends Resource
                             ->minValue(0)
                             ->suffix(__('filament-jobs-monitor::translations.minutes')),
                     ])
-                    ->visible(fn (QueueMonitor $record): bool => $record->hasFailed())
-                    ->action(function (QueueMonitor $record, array $data): void {
+                    ->visible(fn ($record): bool => $record->hasFailed())
+                    ->action(function ($record, array $data): void {
                         $failedJob = FailedJob::where('uuid', $record->job_id)->first();
 
                         if (! $failedJob) {
@@ -143,7 +148,7 @@ class QueueMonitorResource extends Resource
                 Action::make('details')
                     ->label(__('filament-jobs-monitor::translations.details'))
                     ->icon('heroicon-o-information-circle')
-                    ->modalContent(fn (QueueMonitor $queueMonitor) => view('filament-jobs-monitor::queue-monitor-details', [
+                    ->modalContent(fn ($queueMonitor) => view('filament-jobs-monitor::queue-monitor-details', [
                         'exception_message' => $queueMonitor->exception_message,
                         'failed' => $queueMonitor->failed,
                         'attempts' => $queueMonitor->attempt,
@@ -166,7 +171,7 @@ class QueueMonitorResource extends Resource
                     ])
                     ->deselectRecordsAfterCompletion()
                     ->action(function (Collection $records, array $data): void {
-                        $failedRecords = $records->filter(fn (QueueMonitor $record) => $record->hasFailed());
+                        $failedRecords = $records->filter(fn ($record) => $record->hasFailed());
 
                         if ($failedRecords->isEmpty()) {
                             Notification::make()

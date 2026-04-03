@@ -27,7 +27,7 @@ trait QueueProgress
     /**
      * Return Queue Monitor Model.
      */
-    protected function getQueueMonitor(): ?QueueMonitor
+    protected function getQueueMonitor()
     {
         if (! property_exists($this, 'job')) {
             return null;
@@ -37,11 +37,11 @@ trait QueueProgress
             return null;
         }
 
-        if (! $jobId = QueueMonitor::getJobId($this->job)) {
+         $model = resolve(QueueMonitor::class);
+
+        if (! $jobId = $model::getJobId($this->job)) {
             return null;
         }
-
-        $model = QueueMonitor::getModel();
 
         return $model::whereJobId($jobId)
             ->orderBy('started_at', 'desc')

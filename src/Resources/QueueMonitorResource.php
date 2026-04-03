@@ -2,7 +2,6 @@
 
 namespace Croustibat\FilamentJobsMonitor\Resources;
 
-use UnitEnum;
 use Croustibat\FilamentJobsMonitor\Columns\ProgressColumn;
 use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
 use Croustibat\FilamentJobsMonitor\Jobs\RetryFailedJobJob;
@@ -31,6 +30,7 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
+use UnitEnum;
 
 class QueueMonitorResource extends Resource
 {

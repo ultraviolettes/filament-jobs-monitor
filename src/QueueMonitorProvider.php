@@ -54,7 +54,7 @@ class QueueMonitorProvider extends ServiceProvider
     /**
      * Extract tenant ID from job payload.
      */
-    protected static function getTenantIdFromJob(JobContract $job): ?int
+    protected static function getTenantIdFromJob(JobContract $job): null|int|string
     {
         if (! config('filament-jobs-monitor.tenancy.enabled')) {
             return null;

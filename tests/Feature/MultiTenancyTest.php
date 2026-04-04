@@ -26,7 +26,7 @@ it('extracts tenant id from job payload when tenancy is enabled', function () {
     $job = createMockJobWithTenantId(456);
     $tenantId = invokeTenantIdExtraction($job);
 
-    expect($tenantId)->toBe(456);
+    expect($tenantId)->toBe('456');
 });
 
 it('returns null when job has no tenant id property', function () {
@@ -90,7 +90,7 @@ it('FailedJob forTenant scope filters by tenant id in payload', function () {
 
 class TenantJobStub
 {
-    public function __construct(public int $tenantId) {}
+    public function __construct(public int|string $tenantId) {}
 }
 
 class NonTenantJobStub
@@ -98,7 +98,7 @@ class NonTenantJobStub
     public string $someProperty = 'value';
 }
 
-function createMockJobWithTenantId(int $tenantId): JobContract
+function createMockJobWithTenantId(int|string $tenantId): JobContract
 {
     $command = new TenantJobStub($tenantId);
 
@@ -122,7 +122,7 @@ function createMockJobWithoutTenantId(): JobContract
     return $job;
 }
 
-function invokeTenantIdExtraction(JobContract $job): ?int
+function invokeTenantIdExtraction(JobContract $job): null|int|string
 {
     $reflection = new ReflectionClass(QueueMonitorProvider::class);
     $method = $reflection->getMethod('getTenantIdFromJob');

@@ -40,7 +40,7 @@ class QueueMonitorResource extends Resource
 
     public static function getModel(): string
     {
-        return resolve(QueueMonitor::class);
+        return resolve(QueueMonitor::class)::class;
     }
 
     public static function form(Schema $schema): Schema

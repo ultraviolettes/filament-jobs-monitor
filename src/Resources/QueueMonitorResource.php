@@ -26,9 +26,10 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use UnitEnum;
 
@@ -274,23 +275,22 @@ class QueueMonitorResource extends Resource
                         }
                     }),
 
-
                 Action::make('clearLogs')
-                        ->label('Clear logs')
-                        ->icon('heroicon-o-trash')
-                        ->color('danger')
-                        ->requiresConfirmation()
-                        ->modalHeading('Clear all logs?')
-                        ->modalDescription('This will permanently remove all queue monitor records.')
-                        ->modalSubmitActionLabel('Yes, clear all')
-                        ->action(function () {
-                            \DB::table('queue_monitors')->truncate();
+                    ->label('Clear logs')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Clear all logs?')
+                    ->modalDescription('This will permanently remove all queue monitor records.')
+                    ->modalSubmitActionLabel('Yes, clear all')
+                    ->action(function () {
+                        DB::table('queue_monitors')->truncate();
 
-                            Notification::make()
-                                ->title('Queue monitor logs cleared')
-                                ->success()
-                                ->send();
-                        }),
+                        Notification::make()
+                            ->title('Queue monitor logs cleared')
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->filters([
                 SelectFilter::make('status')

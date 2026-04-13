@@ -37,7 +37,7 @@ trait QueueProgress
             return null;
         }
 
-         $model = resolve(QueueMonitor::class);
+        $model = resolve(QueueMonitor::class);
 
         if (! $jobId = $model::getJobId($this->job)) {
             return null;

@@ -2,6 +2,20 @@
 
 All notable changes to `filament-jobs-monitor` will be documented in this file.
 
+## 4.4.0 - 2026-04-13
+
+### Added
+
+- **`int|string` tenant ID support**: `scopeForTenant()` now accepts both integer and string tenant IDs, enabling compatibility with packages like `tenancyforlaravel` that use string-based UUIDs as tenant identifiers. The PHP payload serialization query has been updated accordingly. ([@zerdotre](https://github.com/zerdotre) — #106)
+- **Clear logs button**: New "Clear all logs" header action in the queue monitor table, with a confirmation modal before truncating all records. ([@zerdotre](https://github.com/zerdotre) — #106)
+- **Tenant ID column visibility**: The `tenant_id` column is now visible in the table when multi-tenancy is enabled in the config.
+
+### Changed
+
+- Migration stub: `tenant_id` column type changed from `unsignedBigInteger` to `string` (with index). This only affects **new installations** — existing users who need this change should create a new migration to alter the column type.
+
+> **Note for existing multi-tenant users**: If you were using integer-based tenant IDs, the serialization format used in `scopeForTenant()` has changed from PHP integer format (`i:123;`) to PHP string format (`s:3:"123";`). Existing records in the `queue_monitors` table are not affected, but new jobs dispatched with string-typed `$tenantId` will be stored and queried using the string format.
+
 ## 3.0.0 - 2025-10-29
 
 ### Breaking Changes

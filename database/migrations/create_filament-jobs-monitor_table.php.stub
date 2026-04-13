@@ -22,7 +22,7 @@ return new class extends Migration
             $table->integer('attempt')->default(0);
             $table->integer('progress')->nullable();
             $table->text('exception_message')->nullable();
-            $table->string('tenant_id')->nullable();
+            $table->string('tenant_id')->nullable()->index();
             $table->timestamps();
         });
     }

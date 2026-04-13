@@ -60,10 +60,11 @@ class QueueJob extends Model
         return $driver === 'database';
     }
 
-    public function scopeForTenant(Builder $query, int $tenantId): Builder
+    public function scopeForTenant(Builder $query, string $tenantId): Builder
     {
         $column = config('filament-jobs-monitor.tenancy.column', 'tenant_id');
+        $strlenTenantId = strlen($tenantId);
 
-        return $query->where('payload', 'LIKE', '%"'.$column.'";i:'.$tenantId.';%');
+        return $query->where('payload', 'LIKE', '%"'.$column.'";s:'.$strlenTenantId.':"'.$tenantId.'";%');
     }
 }

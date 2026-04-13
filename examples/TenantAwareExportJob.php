@@ -26,12 +26,12 @@ class TenantAwareExportJob implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param  int  $tenantId  Required for multi-tenancy - the ID of the tenant this job belongs to
+     * @param  int|string  $tenantId  Required for multi-tenancy - the ID of the tenant this job belongs to
      * @param  Collection  $data  The data to be exported
      * @param  string  $filename  The output filename
      */
     public function __construct(
-        public int $tenantId,
+        public int|string $tenantId,
         protected Collection $data,
         protected string $filename
     ) {

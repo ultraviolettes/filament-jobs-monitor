@@ -273,6 +273,24 @@ class QueueMonitorResource extends Resource
                                 ->send();
                         }
                     }),
+
+
+                Action::make('clearLogs')
+                        ->label('Clear logs')
+                        ->icon('heroicon-o-trash')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->modalHeading('Clear all logs?')
+                        ->modalDescription('This will permanently remove all queue monitor records.')
+                        ->modalSubmitActionLabel('Yes, clear all')
+                        ->action(function () {
+                            \DB::table('queue_monitors')->truncate();
+
+                            Notification::make()
+                                ->title('Queue monitor logs cleared')
+                                ->success()
+                                ->send();
+                        }),
             ])
             ->filters([
                 SelectFilter::make('status')

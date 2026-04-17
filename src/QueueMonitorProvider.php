@@ -84,15 +84,20 @@ class QueueMonitorProvider extends ServiceProvider
         $jobId = self::getJobId($job);
         $tenantId = self::getTenantIdFromJob($job);
 
-        $monitor = resolve(QueueMonitor::class)::on(self::getConnection())->create([
+        $attributes = [
             'job_id' => $jobId,
             'name' => $job->resolveName(),
             'queue' => $job->getQueue(),
             'started_at' => $now,
             'attempt' => $job->attempts(),
             'progress' => 0,
-            'tenant_id' => $tenantId,
-        ]);
+        ];
+
+        if (config('filament-jobs-monitor.tenancy.enabled')) {
+            $attributes['tenant_id'] = $tenantId;
+        }
+
+        $monitor = resolve(QueueMonitor::class)::on(self::getConnection())->create($attributes);
 
         resolve(QueueMonitor::class)::on(self::getConnection())
             ->where('id', '!=', $monitor->id)

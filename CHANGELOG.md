@@ -2,6 +2,17 @@
 
 All notable changes to `filament-jobs-monitor` will be documented in this file.
 
+## 4.4.1 - 2026-04-20
+
+### Fixed
+
+- **Details action modal crash**: Fixed `Attempt to read property "exception_message" on null` error when clicking the "Details" action on `QueueMonitorResource`. The closure parameter was renamed from `$queueMonitor` to `$record` to match Filament 5 conventions. ([@danielebarbaro](https://github.com/danielebarbaro) — #111)
+
+### CI
+
+- Bump `dependabot/fetch-metadata` from `3.0.0` to `3.1.0` (#112)
+- Fix Dependabot auto-merge workflow: replace `--auto --merge` with `--squash` to work without the auto-merge repository setting
+
 ## 4.4.0 - 2026-04-13
 
 ### Added

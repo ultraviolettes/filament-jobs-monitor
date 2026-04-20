@@ -147,10 +147,10 @@ class QueueMonitorResource extends Resource
                 Action::make('details')
                     ->label(__('filament-jobs-monitor::translations.details'))
                     ->icon('heroicon-o-information-circle')
-                    ->modalContent(fn ($queueMonitor) => view('filament-jobs-monitor::queue-monitor-details', [
-                        'exception_message' => $queueMonitor->exception_message,
-                        'failed' => $queueMonitor->failed,
-                        'attempts' => $queueMonitor->attempt,
+                    ->modalContent(fn ($record) => view('filament-jobs-monitor::queue-monitor-details', [
+                        'exception_message' => $record->exception_message,
+                        'failed' => $record->failed,
+                        'attempts' => $record->attempt,
                     ]))
                     ->modalSubmitAction(false),
             ])

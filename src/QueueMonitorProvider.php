@@ -64,15 +64,27 @@ class QueueMonitorProvider extends ServiceProvider
 
         $payload = $job->payload();
 
-        // Events have tenantId directly on the payload, not on the command object
-        if (isset($payload['tenantId'])) return $payload['tenantId'];
-
-        if (! isset($payload['data']['command'])) return null;
+        if (! isset($payload['data']['command'])) {
+            return null;
+        }
 
         try {
             $command = unserialize($payload['data']['command']);
 
-            return $command->tenantId ?? null;
+            // Regular job: check for tenantId property on the command itself
+            if (property_exists($command, 'tenantId')) {
+                return $command->tenantId;
+            }
+
+            // Queued event listener: extract tenantId from the event passed to the listener
+            if ($command instanceof \Illuminate\Events\CallQueuedListener) {
+                $event = $command->data[0] ?? null;
+                if ($event && property_exists($event, 'tenantId')) {
+                    return $event->tenantId;
+                }
+            }
+
+            return null;
         } catch (\Throwable) {
             return null;
         }

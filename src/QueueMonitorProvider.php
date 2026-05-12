@@ -64,9 +64,10 @@ class QueueMonitorProvider extends ServiceProvider
 
         $payload = $job->payload();
 
-        if (! isset($payload['data']['command'])) {
-            return null;
-        }
+        // Events have tenantId directly on the payload, not on the command object
+        if (isset($payload['tenantId'])) return $payload['tenantId'];
+
+        if (! isset($payload['data']['command'])) return null;
 
         try {
             $command = unserialize($payload['data']['command']);

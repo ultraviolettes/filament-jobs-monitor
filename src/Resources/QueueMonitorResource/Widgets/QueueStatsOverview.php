@@ -114,18 +114,21 @@ class QueueStatsOverview extends BaseWidget
         return sprintf(
             '%s(%s - %s)%s',
             $mode,
-            $this->dbColumnAsInteger($col1),
-            $this->dbColumnAsInteger($col2),
+            $this->dbColumnAsInteger($col1, $driver),
+            $this->dbColumnAsInteger($col2, $driver),
             ($driver === 'pgsql' ? '::int' : '')
         );
     }
 
-    private function dbColumnAsInteger(string $colName): string
+    private function dbColumnAsInteger(string $colName, ?string $driver = null): string
     {
-        if (DB::connection()->getConfig('driver') === 'pgsql') {
-            return sprintf('CAST(EXTRACT(EPOCH FROM %s) AS INTEGER)', $colName);
-        }
+        $driver ??= DB::connection()->getConfig('driver');
 
-        return $colName;
+        return match ($driver) {
+            'pgsql' => sprintf('CAST(EXTRACT(EPOCH FROM %s) AS INTEGER)', $colName),
+            'sqlite' => sprintf("CAST(strftime('%%s', %s) AS INTEGER)", $colName),
+            'sqlsrv' => sprintf("DATEDIFF(SECOND, '1970-01-01 00:00:00', %s)", $colName),
+            default => sprintf('UNIX_TIMESTAMP(%s)', $colName),
+        };
     }
 }

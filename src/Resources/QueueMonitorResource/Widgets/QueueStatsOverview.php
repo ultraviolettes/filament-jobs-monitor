@@ -4,9 +4,11 @@ namespace Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Widgets;
 
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
+use Closure;
 use Croustibat\FilamentJobsMonitor\Models\QueueMonitor;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Number;
@@ -67,43 +69,41 @@ class QueueStatsOverview extends BaseWidget
 
     private function getJobsPerDay(int $days): array
     {
-        $data = [];
-        $model = resolve(QueueMonitor::class);
-
-        for ($i = $days - 1; $i >= 0; $i--) {
-            $date = Carbon::now()->subDays($i)->toDateString();
-            $data[] = $model::whereDate('created_at', $date)->count();
-        }
-
-        return $data;
+        return $this->countPerDay($days);
     }
 
     private function getSucceededJobsPerDay(int $days): array
     {
-        $data = [];
-        $model = resolve(QueueMonitor::class);
-
-        for ($i = $days - 1; $i >= 0; $i--) {
-            $date = Carbon::now()->subDays($i)->toDateString();
-            $data[] = $model::whereDate('created_at', $date)
-                ->whereNotNull('finished_at')
-                ->where('failed', false)
-                ->count();
-        }
-
-        return $data;
+        return $this->countPerDay($days, fn (Builder $query): Builder => $query
+            ->whereNotNull('finished_at')
+            ->where('failed', false));
     }
 
     private function getFailedJobsPerDay(int $days): array
     {
+        return $this->countPerDay($days, fn (Builder $query): Builder => $query
+            ->whereNotNull('finished_at')
+            ->where('failed', true));
+    }
+
+    private function countPerDay(int $days, ?Closure $constrain = null): array
+    {
+        $query = resolve(QueueMonitor::class)::query()
+            ->where('created_at', '>=', Carbon::now()->subDays($days - 1)->startOfDay());
+
+        if ($constrain !== null) {
+            $query = $constrain($query);
+        }
+
+        $countsByDay = $query
+            ->get(['created_at'])
+            ->countBy(fn (QueueMonitor $monitor): string => $monitor->created_at->toDateString());
+
         $data = [];
-        $model = resolve(QueueMonitor::class);
+
         for ($i = $days - 1; $i >= 0; $i--) {
             $date = Carbon::now()->subDays($i)->toDateString();
-            $data[] = $model::whereDate('created_at', $date)
-                ->whereNotNull('finished_at')
-                ->where('failed', true)
-                ->count();
+            $data[] = $countsByDay->get($date, 0);
         }
 
         return $data;

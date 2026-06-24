@@ -32,7 +32,7 @@ class QueueStatsOverview extends BaseWidget
             ->sum();
 
         $totalJobs = Number::format($aggregatedInfo->count ?? 0);
-        $executionTime = CarbonInterval::seconds($aggregatedInfo->total_time_elapsed ?? 0)->cascade()->forHumans(short: true, parts: 3);
+        $executionTime = CarbonInterval::seconds((int)$aggregatedInfo->total_time_elapsed)->cascade()->forHumans(short: true, parts: 3);
 
         // Get job counts for the last 7 days for charts
         $jobsPerDay = $this->getJobsPerDay(7);

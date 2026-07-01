@@ -103,6 +103,42 @@ php artisan filament:assets
 
 If the migration has not been run, the plugin keeps working as before and simply skips failure grouping.
 
+### Pruning old records
+
+The `QueueMonitor` model uses Laravel's [`Prunable`](https://laravel.com/docs/eloquent#pruning-models) trait and will prune records older than `pruning.retention_days` (default: 7 days) when `pruning.enabled` is `true`.
+
+> **Important:** Laravel's built-in `php artisan model:prune` command only **auto-discovers** prunable models that live in your application's `app/Models` directory. Because `QueueMonitor` is shipped inside this package (`vendor/...`), it is **never** picked up by a bare `model:prune` call — this is the most common cause of "the model is not pruning".
+
+You have two ways to prune the records:
+
+**1. Use the dedicated command shipped with this package (recommended):**
+
+```bash
+php artisan filament-jobs-monitor:prune
+```
+
+This targets the package model directly, so it works regardless of your app structure. Schedule it in `routes/console.php` (Laravel 11+) or `app/Console/Kernel.php`:
+
+```php
+use Illuminate\Support\Facades\Schedule;
+
+Schedule::command('filament-jobs-monitor:prune')->daily();
+```
+
+**2. Or call Laravel's `model:prune` with an explicit `--model` flag:**
+
+```bash
+php artisan model:prune --model="Croustibat\FilamentJobsMonitor\Models\QueueMonitor"
+```
+
+Pruning can also be toggled/configured at the plugin level:
+
+```php
+FilamentJobsMonitorPlugin::make()
+    ->enablePruning() // or ->enablePruning(false) to disable
+    ->pruningRetention(14); // keep records for 14 days
+```
+
 ### Extending Model
 
 Sometimes it's useful to extend the model to add some custom methods. You can do it by extending the model by creating your own model :

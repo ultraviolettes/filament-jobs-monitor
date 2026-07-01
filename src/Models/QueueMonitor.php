@@ -146,14 +146,16 @@ class QueueMonitor extends Model
     /**
      * Get the prunable model query.
      *
-     * @return Builder
+     * When pruning is disabled we return a query that matches nothing rather
+     * than a boolean, so Laravel's pruneAll() (which calls ->when() on the
+     * result) stays a safe no-op instead of crashing on a false value.
      */
-    public function prunable(): Builder|bool
+    public function prunable(): Builder
     {
         if (FilamentJobsMonitorPlugin::get()->getPruning()) {
             return static::where('created_at', '<=', now()->subDays(FilamentJobsMonitorPlugin::get()->getPruningRetention()));
         }
 
-        return false;
+        return static::query()->whereRaw('1 = 0');
     }
 }

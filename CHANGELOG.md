@@ -2,6 +2,27 @@
 
 All notable changes to `filament-jobs-monitor` will be documented in this file.
 
+## 4.5.0 - 2026-07-01
+
+### Added
+
+- **Sentry-style Failures page**: failed jobs are grouped by signature (exception class + job class + normalised message), with a stats overview, per-group 7-day sparklines, Open/Resolved/All tabs, a stack-trace detail slide-over, and actions to resolve/reopen/retry a whole group. Requires the new `add_failures_to_filament-jobs-monitor_table` migration; if it isn't run the plugin keeps working and simply skips grouping. (#119)
+- **Dedicated pruning command** `php artisan filament-jobs-monitor:prune`: prunes the package's `QueueMonitor` records directly, since Laravel's `model:prune` only auto-discovers models under `app/Models`. ([@luiseduardobraschi](https://github.com/luiseduardobraschi) — #120)
+- **Tenant ID discovery for queued events/listeners**: tenant detection now also covers `CallQueuedListener`, with a configurable `tenancy.payload_key` (default `tenant_id`). ([@zerdotre](https://github.com/zerdotre) — #115)
+- **PHP 8.5 support**: added to the Composer constraint, with a Carbon deprecation fixed. ([@BjornKraft](https://github.com/BjornKraft) — #123)
+
+### Fixed
+
+- **Stats widget on SQLite/MySQL**: the execution-time aggregates (total/average) now convert datetimes to epoch seconds per driver (`strftime` on SQLite, `UNIX_TIMESTAMP` on MySQL/MariaDB, `EXTRACT(EPOCH …)` on PostgreSQL) instead of a raw datetime subtraction that returned `0` on SQLite. ([@mokhosh](https://github.com/mokhosh) — #55)
+- **N+1 queries in the stats widget**: the per-day counters now run a single query and group in memory, which is also portable across database drivers. ([@webard](https://github.com/webard) — #121)
+- **`prunable()` crash when pruning is disabled**: it returned `false`, which broke `pruneAll()` (`Call to a member function when() on false`); it now returns a query that matches nothing (safe no-op). (#120)
+- **Duplicate config key**: removed the duplicated `sub_navigation_position` entry. ([@DanielFatkic](https://github.com/DanielFatkic) — #118)
+
+### CI
+
+- Add a `run-tests` workflow running Pest on PHP 8.4 and 8.5. (#125)
+- Bump `actions/checkout` from 6 to 7. (#122)
+
 ## 4.4.1 - 2026-04-20
 
 ### Fixed

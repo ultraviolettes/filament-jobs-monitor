@@ -122,10 +122,15 @@ class QueueStatsOverview extends BaseWidget
 
     private function dbColumnAsInteger(string $colName): string
     {
-        if (DB::connection()->getConfig('driver') === 'pgsql') {
-            return sprintf('CAST(EXTRACT(EPOCH FROM %s) AS INTEGER)', $colName);
-        }
-
-        return $colName;
+        // Convert a datetime column to epoch seconds using each driver's own
+        // function, so the duration aggregates work on SQLite/MySQL/Postgres
+        // alike. Falling back to a raw column subtraction is wrong on SQLite
+        // (string coercion yields 0) — see issue #55.
+        return match (DB::connection()->getConfig('driver')) {
+            'pgsql' => sprintf('CAST(EXTRACT(EPOCH FROM %s) AS INTEGER)', $colName),
+            'sqlite' => "CAST(strftime('%s', {$colName}) AS INTEGER)",
+            'mysql', 'mariadb' => sprintf('UNIX_TIMESTAMP(%s)', $colName),
+            default => $colName,
+        };
     }
 }

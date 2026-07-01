@@ -45,5 +45,8 @@ return [
         'enabled' => false,
         'model' => null,
         'column' => 'tenant_id',
+        // Payload key inspected on queued jobs/listeners to resolve the tenant id
+        // before falling back to the serialized command's `tenantId` property.
+        'payload_key' => 'tenant_id',
     ],
 ];

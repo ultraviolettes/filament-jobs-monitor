@@ -5,6 +5,7 @@ namespace Croustibat\FilamentJobsMonitor;
 use Croustibat\FilamentJobsMonitor\Models\FailureGroup;
 use Croustibat\FilamentJobsMonitor\Models\QueueMonitor;
 use Illuminate\Contracts\Queue\Job as JobContract;
+use Illuminate\Events\CallQueuedListener;
 use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
@@ -58,15 +59,21 @@ class QueueMonitorProvider extends ServiceProvider
      */
     protected static function getTenantIdFromJob(JobContract $job): null|int|string
     {
-        if (! config('filament-jobs-monitor.tenancy.enabled')) return null;
+        if (! config('filament-jobs-monitor.tenancy.enabled')) {
+            return null;
+        }
 
         $payload = $job->payload();
 
         // Try and get the tenantId from the payload key.
-        $payload_key = config('filament-jobs-monitor.tenancy.payload_key', 'tenant_id');
-        if (isset($payload[$payload_key])) return $payload[$payload_key];
+        $payloadKey = config('filament-jobs-monitor.tenancy.payload_key', 'tenant_id');
+        if (isset($payload[$payloadKey])) {
+            return $payload[$payloadKey];
+        }
 
-        if (! isset($payload['data']['command'])) return null;
+        if (! isset($payload['data']['command'])) {
+            return null;
+        }
 
         try {
             $command = unserialize($payload['data']['command']);
@@ -77,7 +84,7 @@ class QueueMonitorProvider extends ServiceProvider
             }
 
             // Queued event listener: extract tenantId from the event passed to the listener
-            if ($command instanceof \Illuminate\Events\CallQueuedListener) {
+            if ($command instanceof CallQueuedListener) {
                 $event = $command->data[0] ?? null;
                 if ($event && property_exists($event, 'tenantId')) {
                     return $event->tenantId;

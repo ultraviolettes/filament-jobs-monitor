@@ -26,7 +26,8 @@ it('extracts tenant id from job payload when tenancy is enabled', function () {
     $job = createMockJobWithTenantId(456);
     $tenantId = invokeTenantIdExtraction($job);
 
-    expect($tenantId)->toBe('456');
+    // getTenantIdFromJob preserves the payload value's type, so an int stays an int.
+    expect($tenantId)->toBe(456);
 });
 
 it('returns null when job has no tenant id property', function () {

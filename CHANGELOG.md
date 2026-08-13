@@ -4,6 +4,11 @@ All notable changes to `filament-jobs-monitor` will be documented in this file.
 
 ## Unreleased
 
+### Added
+
+- **Polish translations for the Failures page**: the 42 keys missing from `pl` (failure groups, stack-trace viewer, failure stats widgets) are now translated, bringing `pl` to full parity with `en`. ([@webard](https://github.com/webard) — #131)
+- **Translation parity test**: `TranslationParityTest` asserts that every locale matches `en` key for key, keeps the same `:count` / `:minutes` / `:delta` placeholders, and preserves Laravel's pluralisation syntax (the number of plural forms stays language-specific). Locales still behind — `ar`, `cs`, `de`, `es`, `fa`, `he`, `it`, `nl`, `pt_BR`, `sk` — are listed in an `INCOMPLETE_LOCALES` constant and reported as skipped; the test fails both when a covered locale drifts and when a listed one becomes complete, so the list has to shrink.
+
 ### Fixed
 
 - **Plugin stylesheet no longer overrides the host application's Tailwind utilities**: `resources/dist/filament-jobs-monitor.css` is registered globally through `FilamentAsset`, so it loads on every page of every panel. It shipped bare utilities (`.block`, `.flex`, `.hidden`, `.w-full`, …) outside any cascade layer, and unlayered CSS outranks rules inside `@layer utilities` regardless of source order — which is where Filament emits the app's own utilities. The most visible symptom was `hidden md:block` staying hidden at every viewport. The build output is now wrapped in `@layer components`, so the app's utilities win again. ([@gmagnenat](https://github.com/gmagnenat) — #145)

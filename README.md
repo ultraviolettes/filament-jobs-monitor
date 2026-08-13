@@ -313,6 +313,8 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 Please see [CONTRIBUTING](.github/CONTRIBUTING.md) for details.
 
+Translations are especially welcome: copy `resources/lang/en/translations.php` into your locale directory and translate the values, keeping the keys and the `:count` / `:minutes` / `:delta` placeholders untouched. `tests/Feature/TranslationParityTest.php` checks that a locale stays in sync with `en`; if you complete a locale listed in its `INCOMPLETE_LOCALES` constant, remove it from that list in the same PR.
+
 ## Security Vulnerabilities
 
 Please review [our security policy](../../security/policy) on how to report security vulnerabilities.

@@ -3,6 +3,7 @@
 return [
     'breadcrumb' => 'Queued Jobs Monitor',
     'title' => 'Queued Jobs',
+    'model_label' => 'Job',
     'navigation_label' => 'Jobs',
     'navigation_group' => 'System',
     'total_jobs' => 'Total Jobs Executed',
@@ -104,4 +105,9 @@ return [
     'recent_occurrences' => 'Recent occurrences',
     'pending_jobs_not_supported_title' => 'Not supported',
     'pending_jobs_not_supported_description' => 'Viewing pending jobs is only supported when using the database queue driver.',
+    'clear_logs' => 'Clear logs',
+    'clear_logs_heading' => 'Clear all logs?',
+    'clear_logs_description' => 'This will permanently remove all queue monitor records.',
+    'clear_logs_confirm' => 'Yes, clear all',
+    'logs_cleared' => 'Queue monitor logs cleared',
 ];

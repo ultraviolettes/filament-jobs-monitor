@@ -277,18 +277,18 @@ class QueueMonitorResource extends Resource
                     }),
 
                 Action::make('clearLogs')
-                    ->label('Clear logs')
+                    ->label(__('filament-jobs-monitor::translations.clear_logs'))
                     ->icon('heroicon-o-trash')
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->modalHeading('Clear all logs?')
-                    ->modalDescription('This will permanently remove all queue monitor records.')
-                    ->modalSubmitActionLabel('Yes, clear all')
+                    ->modalHeading(__('filament-jobs-monitor::translations.clear_logs_heading'))
+                    ->modalDescription(__('filament-jobs-monitor::translations.clear_logs_description'))
+                    ->modalSubmitActionLabel(__('filament-jobs-monitor::translations.clear_logs_confirm'))
                     ->action(function () {
                         resolve(QueueMonitor::class)::truncate();
 
                         Notification::make()
-                            ->title('Queue monitor logs cleared')
+                            ->title(__('filament-jobs-monitor::translations.logs_cleared'))
                             ->success()
                             ->send();
                     }),

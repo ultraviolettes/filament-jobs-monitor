@@ -4,7 +4,7 @@ return [
     'breadcrumb' => 'مراقب المهام في قائمة الانتظار',
     'title' => 'المهام المجدولة',
     'navigation_label' => 'المهام',
-    'navigation_group' => 'النظام',
+    'navigation_group' => 'الإعدادات',
     'total_jobs' => 'عدد المهام المنفذة',
     'pending_jobs' => 'مهام في الانتظار',
     'queued_jobs' => 'سجل المهام',

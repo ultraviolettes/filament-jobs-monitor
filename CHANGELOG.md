@@ -7,10 +7,19 @@ All notable changes to `filament-jobs-monitor` will be documented in this file.
 ### Added
 
 - **Polish translations for the Failures page**: the 42 keys missing from `pl` (failure groups, stack-trace viewer, failure stats widgets) are now translated, bringing `pl` to full parity with `en`. ([@webard](https://github.com/webard) — #131)
-- **Translation parity test**: `TranslationParityTest` asserts that every locale matches `en` key for key, keeps the same `:count` / `:minutes` / `:delta` placeholders, and preserves Laravel's pluralisation syntax (the number of plural forms stays language-specific). Locales still behind — `ar`, `cs`, `de`, `es`, `fa`, `he`, `it`, `nl`, `pt_BR`, `sk` — are listed in an `INCOMPLETE_LOCALES` constant and reported as skipped; the test fails both when a covered locale drifts and when a listed one becomes complete, so the list has to shrink.
+- **Translation parity test**: `TranslationParityTest` asserts that every locale matches `en` key for key, keeps the same `:count` / `:minutes` / `:delta` placeholders, and keeps every pluralised string pluralised — in either of Laravel's notations, the explicit `{1} …|[2,*] …` intervals or the implicit `one|few|many` positional forms. How many forms a locale declares stays language-specific and is not asserted. Locales still behind — `ar`, `cs`, `de`, `es`, `fa`, `he`, `it`, `nl`, `pt_BR`, `sk` — are listed in an `INCOMPLETE_LOCALES` constant and reported as skipped; the test fails both when a covered locale drifts and when a listed one becomes complete, so the list has to shrink.
+- **Russian translations**: a complete `ru` locale, in full parity with `en`. ([@saythe0](https://github.com/saythe0) — #146)
+- **Translated "Clear logs" action**: the action label, confirmation modal (heading, description, submit button) and success notification were hardcoded English strings; they now go through the translation catalogue as `clear_logs`, `clear_logs_heading`, `clear_logs_description`, `clear_logs_confirm` and `logs_cleared`. Closes #139. ([@saythe0](https://github.com/saythe0) — #146)
+- **Localised resource labels and navigation group**: `label`, `plural_label` and `navigation_group` now default to translation keys instead of hardcoded English, so they follow the panel locale. ([@saythe0](https://github.com/saythe0) — #146)
+- **French and Polish translations** for the six keys added above (`model_label` and the five `clear_logs` / `logs_cleared` ones), keeping `fr` and `pl` in full parity with `en`.
+
+### Changed
+
+- **`navigation_group` keeps its `Settings` wording**: the key is now actually rendered (it previously existed in the locale files but was never read — the config shipped a hardcoded `'Settings'`). Its `en` value moved from `System` to `Settings`, and every locale was realigned on the local wording for *Settings*, so panels that never published the config keep the navigation group they have always shown, and now get it localised.
 
 ### Fixed
 
+- **Configured labels no longer collide with the host JSON catalogue**: `label`, `plural_label` and `navigation_group` are only resolved through `__()` when they can address a translation file. A plain string such as `'Jobs'` carries neither a `::` namespace nor a `.` group, so Laravel would look it up in the application's `resources/lang/{locale}.json` and an unrelated entry there could silently rewrite a label configured by the user; such values are now used verbatim.
 - **Plugin stylesheet no longer overrides the host application's Tailwind utilities**: `resources/dist/filament-jobs-monitor.css` is registered globally through `FilamentAsset`, so it loads on every page of every panel. It shipped bare utilities (`.block`, `.flex`, `.hidden`, `.w-full`, …) outside any cascade layer, and unlayered CSS outranks rules inside `@layer utilities` regardless of source order — which is where Filament emits the app's own utilities. The most visible symptom was `hidden md:block` staying hidden at every viewport. The build output is now wrapped in `@layer components`, so the app's utilities win again. ([@gmagnenat](https://github.com/gmagnenat) — #145)
 
 ## 4.5.0 - 2026-07-01

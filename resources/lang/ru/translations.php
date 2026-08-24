@@ -5,7 +5,7 @@ return [
     'title' => 'Задания в очереди',
     'model_label' => 'Задание',
     'navigation_label' => 'Задания',
-    'navigation_group' => 'Система',
+    'navigation_group' => 'Настройки',
     'total_jobs' => 'Всего выполнено заданий',
     'pending_jobs' => 'Ожидающие задания',
     'queued_jobs' => 'История заданий',

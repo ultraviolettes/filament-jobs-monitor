@@ -4,7 +4,7 @@ return [
     'breadcrumb' => 'Monitor de Trabajos En Cola',
     'title' => 'Trabajos En Cola',
     'navigation_label' => 'Trabajos',
-    'navigation_group' => 'Sistema',
+    'navigation_group' => 'Ajustes',
     'total_jobs' => 'Total Trabajos Ejecutados',
     'pending_jobs' => 'Trabajos Pendientes',
     'execution_time' => 'Tiempo Total de Ejecución',

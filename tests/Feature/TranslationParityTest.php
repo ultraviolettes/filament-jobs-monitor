@@ -6,7 +6,7 @@
  * visible, and `it('only lists genuinely incomplete locales …')` fails as soon
  * as one of them catches up, which forces it to be removed from this list.
  *
- * Key counts at the time of writing (out of 103):
+ * Key counts at the time of writing (out of 109):
  *   ar 61, cs 18, de 61, es 19, fa 17, he 61, it 19, nl 17, pt_BR 19, sk 19
  *
  * `ar` additionally drops the `:count` placeholder in
@@ -58,13 +58,21 @@ function translationPlaceholders(string $value): array
 }
 
 /**
- * Whether a string uses Laravel's pluralisation syntax (`{1} …|[2,*] …`).
- * The number of forms is deliberately not asserted: it is language-specific
- * (French uses 2, Polish uses 3).
+ * Whether a string still offers several plural forms.
+ *
+ * Laravel's MessageSelector splits a line on `|` and supports both notations:
+ * the explicit interval syntax (`{1} …|[2,*] …`, used by `en`) and the
+ * implicit positional one (`one|few|many`), which languages with more than two
+ * CLDR plural categories — Russian, Polish — normally use. Matching on `|`
+ * therefore mirrors what the framework itself does, and still catches a form
+ * that was flattened to a single string in a translation.
+ *
+ * How many forms a locale declares is deliberately not asserted: that is
+ * language-specific (French has 2, Polish and Russian have 3).
  */
 function translationIsPluralised(string $value): bool
 {
-    return (bool) preg_match('/\{\d+\}|\[\d+,(?:\d+|\*)\]/', $value);
+    return count(explode('|', $value)) > 1;
 }
 
 dataset('complete locales', fn () => array_values(

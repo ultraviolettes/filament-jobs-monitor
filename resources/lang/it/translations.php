@@ -6,7 +6,7 @@ return [
     'execution_time' => 'Tempo di esecuzione totale',
     'failed' => 'Fallito',
     'name' => 'Nome',
-    'navigation_group' => 'Sistema',
+    'navigation_group' => 'Impostazioni',
     'navigation_label' => 'Lavori',
     'pending_jobs' => 'Lavori in sospeso',
     'progress' => 'Progresso',

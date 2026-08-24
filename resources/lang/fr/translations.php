@@ -3,8 +3,9 @@
 return [
     'breadcrumb' => 'Monitor de Jobs En File',
     'title' => 'Jobs',
+    'model_label' => 'Job',
     'navigation_label' => 'Jobs',
-    'navigation_group' => 'Système',
+    'navigation_group' => 'Paramètres',
     'total_jobs' => 'Total Jobs Exécutés',
     'pending_jobs' => 'Jobs en attente',
     'queued_jobs' => 'Historique des Jobs',
@@ -104,4 +105,9 @@ return [
     'recent_occurrences' => 'Occurrences récentes',
     'pending_jobs_not_supported_title' => 'Non supporté',
     'pending_jobs_not_supported_description' => 'L\'affichage des jobs en attente n\'est disponible qu\'avec le driver de queue database.',
+    'clear_logs' => 'Vider les logs',
+    'clear_logs_heading' => 'Vider tous les logs ?',
+    'clear_logs_description' => 'Cette action supprimera définitivement tous les enregistrements du monitor de jobs.',
+    'clear_logs_confirm' => 'Oui, tout vider',
+    'logs_cleared' => 'Logs du monitor de jobs vidés',
 ];

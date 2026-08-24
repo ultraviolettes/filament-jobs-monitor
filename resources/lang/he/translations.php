@@ -4,7 +4,7 @@ return [
     'breadcrumb' => 'ניטור עבודות בתור',
     'title' => 'עבודות בתור',
     'navigation_label' => 'עבודות',
-    'navigation_group' => 'מערכת',
+    'navigation_group' => 'הגדרות',
     'total_jobs' => 'סך כל העבודות שבוצעו',
     'pending_jobs' => 'עבודות ממתינות',
     'queued_jobs' => 'היסטוריית עבודות',

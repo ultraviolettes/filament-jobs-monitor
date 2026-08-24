@@ -4,7 +4,7 @@ return [
     'breadcrumb' => 'Hintergrundprozesse',
     'title' => 'Hintergrundprozesse',
     'navigation_label' => 'Hintergrundprozesse',
-    'navigation_group' => 'System',
+    'navigation_group' => 'Einstellungen',
     'total_jobs' => 'Ausgeführte Prozesse',
     'pending_jobs' => 'Wartende Prozesse',
     'execution_time' => 'Gesamtlaufzeit',

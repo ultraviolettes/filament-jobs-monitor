@@ -2,7 +2,7 @@
 
 All notable changes to `filament-jobs-monitor` will be documented in this file.
 
-## Unreleased
+## 4.6.0 - 2026-08-24
 
 ### Added
 

@@ -4,7 +4,7 @@ return [
     'breadcrumb' => 'مانیتور صف‌وظایف',
     'title' => 'وظایف در صف',
     'navigation_label' => 'وظایف',
-    'navigation_group' => 'سیستم',
+    'navigation_group' => 'تنظیمات',
     'total_jobs' => 'مجموع وظایف اجرا شده',
     'pending_jobs' => 'وظایف در انتظار',
     'execution_time' => 'زمان کل اجرا',

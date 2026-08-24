@@ -132,9 +132,7 @@ class FilamentJobsMonitorPlugin implements Plugin
      */
     public function getLabel(): ?string
     {
-        $label = $this->evaluate($this->label) ?? config('filament-jobs-monitor.resources.label');
-
-        return $label === null ? null : __($label);
+        return $this->translate($this->evaluate($this->label) ?? config('filament-jobs-monitor.resources.label'));
     }
 
     /**
@@ -152,9 +150,7 @@ class FilamentJobsMonitorPlugin implements Plugin
      */
     public function getPluralLabel(): ?string
     {
-        $label = $this->evaluate($this->pluralLabel) ?? config('filament-jobs-monitor.resources.plural_label');
-
-        return $label === null ? null : __($label);
+        return $this->translate($this->evaluate($this->pluralLabel) ?? config('filament-jobs-monitor.resources.plural_label'));
     }
 
     /**
@@ -182,7 +178,7 @@ class FilamentJobsMonitorPlugin implements Plugin
     {
         $group = $this->evaluate($this->navigationGroup) ?? config('filament-jobs-monitor.resources.navigation_group');
 
-        return is_string($group) ? __($group) : $group;
+        return is_string($group) ? $this->translate($group) : $group;
     }
 
     /**
@@ -309,5 +305,29 @@ class FilamentJobsMonitorPlugin implements Plugin
     public function getBreadcrumb(): string
     {
         return __('filament-jobs-monitor::translations.breadcrumb');
+    }
+
+    /**
+     * Resolve a configured value that may be a translation key.
+     *
+     * Only strings that can actually address a translation file are handed to
+     * `__()`. A string with neither a `::` namespace nor a `.` group is looked
+     * up by Laravel in the host application's JSON catalogue, so translating it
+     * would let an unrelated `resources/lang/{locale}.json` entry silently
+     * override a literal label such as `Jobs` configured by the user.
+     */
+    protected function translate(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        if (! str_contains($value, '::') && ! str_contains($value, '.')) {
+            return $value;
+        }
+
+        $translated = __($value);
+
+        return is_string($translated) ? $translated : $value;
     }
 }

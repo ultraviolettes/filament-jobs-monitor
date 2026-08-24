@@ -80,6 +80,8 @@ return [
 ];
 ```
 
+**NOTE:** `label`, `plural_label` and `navigation_group` default to translation keys, so they follow the panel locale. Replace any of them with a plain string (`'label' => 'Job'`) to hard-code it: a value carrying neither a `::` namespace nor a `.` group is used verbatim and is never looked up in your application's JSON translation catalogue.
+
 **NOTE:** Since there isn't a universal way to retrieve all used queues, it's necessary to define them to obtain all pending jobs. 
 
 ### Failures page
@@ -312,6 +314,8 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 ## Contributing
 
 Please see [CONTRIBUTING](.github/CONTRIBUTING.md) for details.
+
+Translations are especially welcome: copy `resources/lang/en/translations.php` into your locale directory and translate the values, keeping the keys and the `:count` / `:minutes` / `:delta` placeholders untouched. `tests/Feature/TranslationParityTest.php` checks that a locale stays in sync with `en`; if you complete a locale listed in its `INCOMPLETE_LOCALES` constant, remove it from that list in the same PR.
 
 ## Security Vulnerabilities
 

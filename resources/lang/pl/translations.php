@@ -3,8 +3,9 @@
 return [
     'breadcrumb' => 'Kolejka zadań',
     'title' => 'Kolejka zadań',
+    'model_label' => 'Zadanie',
     'navigation_label' => 'Zadania',
-    'navigation_group' => 'System',
+    'navigation_group' => 'Ustawienia',
     'total_jobs' => 'Łączna liczba wykonanych zadań',
     'pending_jobs' => 'Oczekujące zadania',
     'queued_jobs' => 'Historia zadań',
@@ -104,4 +105,9 @@ return [
     'recent_occurrences' => 'Ostatnie wystąpienia',
     'pending_jobs_not_supported_title' => 'Nieobsługiwane',
     'pending_jobs_not_supported_description' => 'Podgląd oczekujących zadań jest dostępny tylko przy użyciu sterownika bazy danych dla kolejki.',
+    'clear_logs' => 'Wyczyść logi',
+    'clear_logs_heading' => 'Wyczyścić wszystkie logi?',
+    'clear_logs_description' => 'Spowoduje to trwałe usunięcie wszystkich rekordów monitora kolejki.',
+    'clear_logs_confirm' => 'Tak, wyczyść wszystko',
+    'logs_cleared' => 'Logi monitora kolejki zostały wyczyszczone',
 ];

@@ -4,7 +4,7 @@ return [
     'breadcrumb' => 'Achtergrondtaken Monitor',
     'title' => 'Achtergrondtaken',
     'navigation_label' => 'Achtergrondtaken',
-    'navigation_group' => 'Systeem',
+    'navigation_group' => 'Instellingen',
     'total_jobs' => 'Totaal aantal verwerkte taken',
     'pending_jobs' => 'Taken in de wachtrij',
     'execution_time' => 'Totale verwerkingstijd',

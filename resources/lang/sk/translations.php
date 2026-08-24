@@ -4,7 +4,7 @@ return [
     'breadcrumb' => 'Monitor frontových úloh',
     'title' => 'Frontové úlohy',
     'navigation_label' => 'Úlohy',
-    'navigation_group' => 'Systém',
+    'navigation_group' => 'Nastavenia',
     'total_jobs' => 'Celkový počet vykonaných úloh',
     'pending_jobs' => 'Čakajúce úlohy',
     'execution_time' => 'Celkový čas vykonania',

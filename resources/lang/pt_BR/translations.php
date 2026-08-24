@@ -4,7 +4,7 @@ return [
     'breadcrumb' => 'Monitor de Jobs em Fila',
     'title' => 'Jobs em Fila',
     'navigation_label' => 'Jobs',
-    'navigation_group' => 'Sistema',
+    'navigation_group' => 'Configurações',
     'total_jobs' => 'Total de Jobs Executados',
     'pending_jobs' => 'Jobs Pendentes',
     'execution_time' => 'Tempo Total de Execução',

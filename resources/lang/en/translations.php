@@ -5,7 +5,7 @@ return [
     'title' => 'Queued Jobs',
     'model_label' => 'Job',
     'navigation_label' => 'Jobs',
-    'navigation_group' => 'System',
+    'navigation_group' => 'Settings',
     'total_jobs' => 'Total Jobs Executed',
     'pending_jobs' => 'Pending Jobs',
     'queued_jobs' => 'Job History',

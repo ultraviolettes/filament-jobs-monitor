@@ -3,6 +3,7 @@
 return [
     'breadcrumb' => 'Monitor de Trabajos En Cola',
     'title' => 'Trabajos En Cola',
+    'plural_model_label' => 'Trabajos',
     'navigation_label' => 'Trabajos',
     'navigation_group' => 'Ajustes',
     'total_jobs' => 'Total Trabajos Ejecutados',

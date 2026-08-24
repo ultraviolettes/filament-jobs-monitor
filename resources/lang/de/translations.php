@@ -3,6 +3,7 @@
 return [
     'breadcrumb' => 'Hintergrundprozesse',
     'title' => 'Hintergrundprozesse',
+    'plural_model_label' => 'Hintergrundprozesse',
     'navigation_label' => 'Hintergrundprozesse',
     'navigation_group' => 'Einstellungen',
     'total_jobs' => 'Ausgeführte Prozesse',

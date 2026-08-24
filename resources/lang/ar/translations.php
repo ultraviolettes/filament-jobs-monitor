@@ -3,6 +3,7 @@
 return [
     'breadcrumb' => 'مراقب المهام في قائمة الانتظار',
     'title' => 'المهام المجدولة',
+    'plural_model_label' => 'المهام',
     'navigation_label' => 'المهام',
     'navigation_group' => 'الإعدادات',
     'total_jobs' => 'عدد المهام المنفذة',

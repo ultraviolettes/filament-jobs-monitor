@@ -4,6 +4,7 @@ return [
     'breadcrumb' => 'Kolejka zadań',
     'title' => 'Kolejka zadań',
     'model_label' => 'Zadanie',
+    'plural_model_label' => 'Zadania',
     'navigation_label' => 'Zadania',
     'navigation_group' => 'Ustawienia',
     'total_jobs' => 'Łączna liczba wykonanych zadań',

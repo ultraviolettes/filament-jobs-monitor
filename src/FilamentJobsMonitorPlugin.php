@@ -132,7 +132,9 @@ class FilamentJobsMonitorPlugin implements Plugin
      */
     public function getLabel(): ?string
     {
-        return $this->evaluate($this->label) ?? config('filament-jobs-monitor.resources.label');
+        $label = $this->evaluate($this->label) ?? config('filament-jobs-monitor.resources.label');
+
+        return $label === null ? null : __($label);
     }
 
     /**
@@ -150,7 +152,9 @@ class FilamentJobsMonitorPlugin implements Plugin
      */
     public function getPluralLabel(): ?string
     {
-        return $this->evaluate($this->pluralLabel) ?? config('filament-jobs-monitor.resources.plural_label');
+        $label = $this->evaluate($this->pluralLabel) ?? config('filament-jobs-monitor.resources.plural_label');
+
+        return $label === null ? null : __($label);
     }
 
     /**
@@ -176,7 +180,9 @@ class FilamentJobsMonitorPlugin implements Plugin
      */
     public function getNavigationGroup(): null|string|UnitEnum
     {
-        return $this->evaluate($this->navigationGroup) ?? config('filament-jobs-monitor.resources.navigation_group');
+        $group = $this->evaluate($this->navigationGroup) ?? config('filament-jobs-monitor.resources.navigation_group');
+
+        return is_string($group) ? __($group) : $group;
     }
 
     /**

@@ -8,9 +8,9 @@ return [
 
     'resources' => [
         'enabled' => true,
-        'label' => 'Job',
-        'plural_label' => 'Jobs',
-        'navigation_group' => 'Settings',
+        'label' => 'filament-jobs-monitor::translations.model_label',
+        'plural_label' => 'filament-jobs-monitor::translations.navigation_label',
+        'navigation_group' => 'filament-jobs-monitor::translations.navigation_group',
         'navigation_icon' => 'heroicon-o-cpu-chip',
         'navigation_sort' => null,
         'navigation_count_badge' => false,

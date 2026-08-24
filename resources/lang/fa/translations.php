@@ -3,6 +3,7 @@
 return [
     'breadcrumb' => 'مانیتور صف‌وظایف',
     'title' => 'وظایف در صف',
+    'plural_model_label' => 'وظایف',
     'navigation_label' => 'وظایف',
     'navigation_group' => 'تنظیمات',
     'total_jobs' => 'مجموع وظایف اجرا شده',

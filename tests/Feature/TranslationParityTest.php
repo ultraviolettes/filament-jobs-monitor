@@ -6,8 +6,8 @@
  * visible, and `it('only lists genuinely incomplete locales …')` fails as soon
  * as one of them catches up, which forces it to be removed from this list.
  *
- * Key counts at the time of writing (out of 109):
- *   ar 61, cs 18, de 61, es 19, fa 17, he 61, it 19, nl 17, pt_BR 19, sk 19
+ * Key counts at the time of writing (out of 110):
+ *   ar 62, cs 19, de 62, es 20, fa 18, he 62, it 20, nl 18, pt_BR 20, sk 20
  *
  * `ar` additionally drops the `:count` placeholder in
  * `bulk_retry_partial_description`; that is covered by the placeholder

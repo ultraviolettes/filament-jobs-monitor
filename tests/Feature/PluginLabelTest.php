@@ -19,7 +19,9 @@ function registerJsonTranslation(string $key, string $value, string $locale = 'e
 it('translates the namespaced keys the shipped config points at', function () {
     $plugin = FilamentJobsMonitorPlugin::make();
 
-    expect($plugin->getLabel())->toBe('Job')
+    expect(config('filament-jobs-monitor.resources.plural_label'))
+        ->toBe('filament-jobs-monitor::translations.plural_model_label')
+        ->and($plugin->getLabel())->toBe('Job')
         ->and($plugin->getPluralLabel())->toBe('Jobs')
         ->and($plugin->getNavigationGroup())->toBe('Settings');
 });

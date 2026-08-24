@@ -3,6 +3,7 @@
 return [
     'breadcrumb' => 'Monitor de Jobs em Fila',
     'title' => 'Jobs em Fila',
+    'plural_model_label' => 'Jobs',
     'navigation_label' => 'Jobs',
     'navigation_group' => 'Configurações',
     'total_jobs' => 'Total de Jobs Executados',

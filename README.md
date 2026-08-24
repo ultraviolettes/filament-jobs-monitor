@@ -52,7 +52,7 @@ return [
     'resources' => [
         'enabled' => true,
         'label' => 'filament-jobs-monitor::translations.model_label',
-        'plural_label' => 'filament-jobs-monitor::translations.navigation_label',
+        'plural_label' => 'filament-jobs-monitor::translations.plural_model_label',
         'navigation_group' => 'filament-jobs-monitor::translations.navigation_group',
         'navigation_icon' => 'heroicon-o-cpu-chip',
         'navigation_sort' => null,

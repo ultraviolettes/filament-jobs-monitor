@@ -4,6 +4,7 @@ return [
     'breadcrumb' => 'Мониторинг заданий в очереди',
     'title' => 'Задания в очереди',
     'model_label' => 'Задание',
+    'plural_model_label' => 'Задания',
     'navigation_label' => 'Задания',
     'navigation_group' => 'Настройки',
     'total_jobs' => 'Всего выполнено заданий',

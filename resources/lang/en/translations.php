@@ -4,6 +4,7 @@ return [
     'breadcrumb' => 'Queued Jobs Monitor',
     'title' => 'Queued Jobs',
     'model_label' => 'Job',
+    'plural_model_label' => 'Jobs',
     'navigation_label' => 'Jobs',
     'navigation_group' => 'Settings',
     'total_jobs' => 'Total Jobs Executed',

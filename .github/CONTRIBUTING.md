@@ -52,4 +52,16 @@ If the project maintainer has any additional requirements, you will find them li
 
 - **Send coherent history** - Make sure each individual commit in your pull request is meaningful. If you had to make multiple intermediate commits while developing, please [squash them](https://www.git-scm.com/book/en/v2/Git-Tools-Rewriting-History#Changing-Multiple-Commit-Messages) before submitting.
 
+## Building the assets
+
+The compiled stylesheet under `resources/dist/` is committed, so rebuild it with `npm run build`
+(never `npx tailwindcss` on its own) whenever you touch a Blade view or a class name in `src/`.
+
+The build ends with an `npm run layer` step that wraps the output in `@layer components`. This is
+not cosmetic: the stylesheet is registered globally through `FilamentAsset`, so it loads on every
+page of every panel of the host application, and unlayered CSS outranks anything inside
+`@layer utilities` — where Filament emits the app's own utilities — regardless of source order.
+Shipping a bare `.hidden` is enough to break `hidden md:block` app-wide (see #145).
+`tests/Feature/PluginStylesheetTest.php` fails if the committed build ever loses its layer.
+
 **Happy coding**!

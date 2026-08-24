@@ -2,6 +2,12 @@
 
 All notable changes to `filament-jobs-monitor` will be documented in this file.
 
+## Unreleased
+
+### Fixed
+
+- **Plugin stylesheet no longer overrides the host application's Tailwind utilities**: `resources/dist/filament-jobs-monitor.css` is registered globally through `FilamentAsset`, so it loads on every page of every panel. It shipped bare utilities (`.block`, `.flex`, `.hidden`, `.w-full`, …) outside any cascade layer, and unlayered CSS outranks rules inside `@layer utilities` regardless of source order — which is where Filament emits the app's own utilities. The most visible symptom was `hidden md:block` staying hidden at every viewport. The build output is now wrapped in `@layer components`, so the app's utilities win again. ([@gmagnenat](https://github.com/gmagnenat) — #145)
+
 ## 4.5.0 - 2026-07-01
 
 ### Added

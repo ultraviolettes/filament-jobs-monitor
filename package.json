@@ -3,11 +3,12 @@
     "scripts": {
         "dev:styles": "npx tailwindcss -i resources/css/plugin.css -o resources/dist/filament-jobs-monitor.css --postcss --watch",
         "dev:scripts": "esbuild resources/js/plugin.js --bundle --sourcemap=inline --outfile=resources/dist/filament-jobs-monitor.js --watch",
-        "build:styles": "npx tailwindcss -i resources/css/plugin.css -o resources/dist/filament-jobs-monitor.css --postcss --minify && npm run purge",
+        "build:styles": "npx tailwindcss -i resources/css/plugin.css -o resources/dist/filament-jobs-monitor.css --postcss --minify && npm run purge && npm run layer",
         "build:scripts": "esbuild resources/js/plugin.js --bundle --minify --outfile=resources/dist/filament-jobs-monitor.js",
         "purge": "filament-purge -i resources/dist/filament-jobs-monitor.css -o resources/dist/filament-jobs-monitor.css",
         "dev": "npm-run-all --parallel dev:*",
-        "build": "npm-run-all build:*"
+        "build": "npm-run-all build:*",
+        "layer": "node -e \"const fs=require('fs'),f='resources/dist/filament-jobs-monitor.css',c=fs.readFileSync(f,'utf8').trim();if(c&&!c.startsWith('@layer components{'))fs.writeFileSync(f,'@layer components{'+c+'}')\""
     },
     "devDependencies": {
         "@awcodes/filament-plugin-purge": "^1.0.2",

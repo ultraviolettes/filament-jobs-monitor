@@ -26,6 +26,7 @@
         "spatie/laravel-package-tools": "^1.13.5"
     },
     "require-dev": {
+        "larastan/larastan": "^3.0",
         "laravel/pint": "^1.0",
         "orchestra/testbench": "^9.14|^10.10|^11.0",
         "pestphp/pest": "^3.8|^4.0|^5.0"
@@ -41,7 +42,9 @@
         }
     },
     "scripts": {
-        "lint": "vendor/bin/pint"
+        "analyse": "vendor/bin/phpstan analyse",
+        "lint": "vendor/bin/pint",
+        "test": "vendor/bin/pest"
     },
     "config": {
         "sort-packages": true,

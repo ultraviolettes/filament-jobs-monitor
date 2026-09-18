@@ -7,7 +7,23 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property string $signature
+ * @property string $exception_class
+ * @property string|null $job_class
+ * @property string|null $queue
+ * @property string|null $message
+ * @property int $occurrences_count
+ * @property Carbon|null $first_occurred_at
+ * @property Carbon|null $last_occurred_at
+ * @property Carbon|null $resolved_at
+ * @property string|null $tenant_id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ */
 class FailureGroup extends Model
 {
     protected $table = 'queue_monitor_failure_groups';
@@ -72,6 +88,9 @@ class FailureGroup extends Model
      *--------------------------------------------------------------------------
      */
 
+    /**
+     * @return HasMany<QueueMonitor, $this>
+     */
     public function monitors(): HasMany
     {
         return $this->hasMany(resolve(QueueMonitor::class)::class, 'failure_signature', 'signature');

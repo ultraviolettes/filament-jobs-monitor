@@ -4,7 +4,19 @@ namespace Croustibat\FilamentJobsMonitor\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
+/**
+ * A row of Laravel's `failed_jobs` table.
+ *
+ * @property int $id
+ * @property string $uuid
+ * @property string $connection
+ * @property string $queue
+ * @property array<string, mixed> $payload
+ * @property string $exception
+ * @property Carbon $failed_at
+ */
 class FailedJob extends Model
 {
     public $timestamps = false;

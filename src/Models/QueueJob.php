@@ -4,7 +4,19 @@ namespace Croustibat\FilamentJobsMonitor\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
+/**
+ * A row of Laravel's `jobs` table (database queue driver).
+ *
+ * @property int $id
+ * @property string $queue
+ * @property array<string, mixed>|null $payload
+ * @property int $attempts
+ * @property Carbon|null $reserved_at
+ * @property Carbon $available_at
+ * @property Carbon $created_at
+ */
 class QueueJob extends Model
 {
     public $timestamps = false;

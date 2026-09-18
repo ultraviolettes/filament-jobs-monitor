@@ -11,8 +11,29 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * @property int $id
+ * @property string $job_id
+ * @property string|null $name
+ * @property string|null $queue
+ * @property Carbon|null $started_at
+ * @property Carbon|null $finished_at
+ * @property bool $failed
+ * @property int $attempt
+ * @property int|null $progress
+ * @property string|null $exception_message
+ * @property string|null $exception_class
+ * @property string|null $exception
+ * @property string|null $failure_signature
+ * @property string|null $tenant_id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read int|float|string|null $total_time_elapsed Only set by the stats widget's aggregate query.
+ * @property-read int|float|string|null $average_time_elapsed Only set by the stats widget's aggregate query.
+ */
 class QueueMonitor extends Model
 {
     use HasFactory, Prunable;

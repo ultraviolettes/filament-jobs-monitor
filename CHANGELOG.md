@@ -2,6 +2,18 @@
 
 All notable changes to `filament-jobs-monitor` will be documented in this file.
 
+## 4.6.2 - 2026-09-18
+
+### Fixed
+
+- **`resources.enabled` is honoured again for the navigation**: `shouldRegisterNavigation()` compared with `=== true` before a `??` fallback that could therefore never be reached, and the navigation flag defaulted to `true`, so the config key was ignored. When `enableNavigation()` is not called, the config key now decides (default `true`); the fluent method still takes precedence. **Upgrade note**: apps that published the config with `'enabled' => false` without calling `enableNavigation()` will now see the navigation item hidden, as that key intended. (#159)
+
+### Changed
+
+- **Declared compatibility matches what is tested**: `illuminate/contracts` is now `^11.28|^12.0|^13.0`. Laravel 10 was listed but could never be installed, since every Filament 4 and 5 release requires Laravel 11.28+. The CI now runs every Laravel 11/12/13 × Filament 4/5 pair, with `prefer-lowest` jobs, instead of Laravel 12 + Filament 5 only. (#157)
+- **Static analysis actually runs**: Larastan 3 (PHPStan 2) is installed, the config was fixed, models document their columns with `@property`, and a PHPStan workflow runs on every push and PR. `composer analyse` and `composer test` scripts added. (#158)
+- **Community health files**: vulnerabilities are now reported through GitHub private vulnerability reporting (see `SECURITY.md`), plus a Code of Conduct, a pull request template, a feature request issue template, and an updated CONTRIBUTING guide. (#160)
+
 ## 4.6.1 - 2026-09-18
 
 ### Fixed

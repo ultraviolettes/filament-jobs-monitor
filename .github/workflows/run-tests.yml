@@ -10,15 +10,21 @@ on:
 
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-        php: [8.5, 8.4]
-        stability: [prefer-stable]
+        # Every Laravel x Filament pair declared in composer.json is exercised at
+        # least once, and each major is also resolved against its lowest versions.
+        include:
+          - { php: '8.2', laravel: '11.*', testbench: '^9.14', filament: '4.*', stability: prefer-lowest }
+          - { php: '8.3', laravel: '11.*', testbench: '^9.14', filament: '5.*', stability: prefer-stable }
+          - { php: '8.3', laravel: '12.*', testbench: '^10.10', filament: '4.*', stability: prefer-stable }
+          - { php: '8.4', laravel: '12.*', testbench: '^10.10', filament: '5.*', stability: prefer-lowest }
+          - { php: '8.4', laravel: '13.*', testbench: '^11.0', filament: '4.*', stability: prefer-stable }
+          - { php: '8.5', laravel: '13.*', testbench: '^11.0', filament: '5.*', stability: prefer-stable }
 
-    name: PHP ${{ matrix.php }} - ${{ matrix.os }} - ${{ matrix.stability }}
+    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} - Filament ${{ matrix.filament }} - ${{ matrix.stability }}
 
     steps:
       - name: Checkout code
@@ -32,7 +38,9 @@ jobs:
           coverage: none
 
       - name: Install dependencies
-        run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
+        run: |
+          composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "filament/filament:${{ matrix.filament }}" --no-interaction --no-update
+          composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
 
       - name: Execute tests
         run: vendor/bin/pest --no-coverage

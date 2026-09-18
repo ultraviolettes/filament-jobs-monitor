@@ -284,6 +284,7 @@ Then you can call your Job with the following code:
 
 ### Enabling navigation
 
+The navigation item is shown by default. When `enableNavigation()` is not called, it follows the `resources.enabled` config key; the fluent method always takes precedence over the config.
 
 ````php
         // AdminPanelProvider.php
@@ -303,7 +304,7 @@ Or you can use a closure to enable navigation only for specific users:
             // ...
             FilamentJobsMonitorPlugin::make()
                 ->enableNavigation(
-                    fn () => auth()->user()->can('view_queue_job') || auth()->user()->can('view_any_queue_job)'),
+                    fn () => auth()->user()->can('view_queue_job') || auth()->user()->can('view_any_queue_job'),
                 ),
         ])
 ```

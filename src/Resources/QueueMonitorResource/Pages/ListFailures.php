@@ -183,7 +183,7 @@ class ListFailures extends Page implements HasTable
                     ->color('success')
                     ->deselectRecordsAfterCompletion()
                     ->action(function (Collection $records): void {
-                        $records->each->markResolved();
+                        $records->each(fn (FailureGroup $group) => $group->markResolved());
 
                         Notification::make()
                             ->title(trans_choice('filament-jobs-monitor::translations.bulk_resolved', $records->count(), ['count' => $records->count()]))

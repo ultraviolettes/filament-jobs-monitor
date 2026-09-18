@@ -79,6 +79,7 @@ class QueueMonitorResource extends Resource
                         'running' => 'primary',
                         'succeeded' => 'success',
                         'failed' => 'danger',
+                        default => 'gray',
                     })
                     ->sortable(false)
                     ->searchable(false),
@@ -171,7 +172,7 @@ class QueueMonitorResource extends Resource
                     ])
                     ->deselectRecordsAfterCompletion()
                     ->action(function (Collection $records, array $data): void {
-                        $failedRecords = $records->filter(fn ($record) => $record->hasFailed());
+                        $failedRecords = $records->filter(fn (QueueMonitor $record): bool => $record->hasFailed());
 
                         if ($failedRecords->isEmpty()) {
                             Notification::make()
@@ -187,6 +188,7 @@ class QueueMonitorResource extends Resource
                         $uuids = [];
                         $failedCount = 0;
 
+                        /** @var QueueMonitor $record */
                         foreach ($failedRecords as $record) {
                             $failedJob = resolve(FailedJob::class)::where('uuid', $record->job_id)->first();
 
@@ -335,7 +337,7 @@ class QueueMonitorResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return Str::title(static::getPluralModelLabel()) ?? Str::title(static::getModelLabel());
+        return Str::title(static::getPluralModelLabel());
     }
 
     public static function getCluster(): ?string

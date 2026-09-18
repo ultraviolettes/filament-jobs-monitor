@@ -3,6 +3,7 @@
 return [
     'breadcrumb' => 'Monitor úloh ve frontě',
     'title' => 'Úlohy ve frontě',
+    'plural_model_label' => 'Úlohy',
     'navigation_label' => 'Úlohy',
     'navigation_group' => 'Nastavení',
     'total_jobs' => 'Celkový počet zpracovaných úloh',

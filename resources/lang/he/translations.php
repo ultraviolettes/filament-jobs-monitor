@@ -3,6 +3,7 @@
 return [
     'breadcrumb' => 'ניטור עבודות בתור',
     'title' => 'עבודות בתור',
+    'plural_model_label' => 'עבודות',
     'navigation_label' => 'עבודות',
     'navigation_group' => 'הגדרות',
     'total_jobs' => 'סך כל העבודות שבוצעו',

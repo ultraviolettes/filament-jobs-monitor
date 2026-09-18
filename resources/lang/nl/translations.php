@@ -3,6 +3,7 @@
 return [
     'breadcrumb' => 'Achtergrondtaken Monitor',
     'title' => 'Achtergrondtaken',
+    'plural_model_label' => 'Achtergrondtaken',
     'navigation_label' => 'Achtergrondtaken',
     'navigation_group' => 'Instellingen',
     'total_jobs' => 'Totaal aantal verwerkte taken',

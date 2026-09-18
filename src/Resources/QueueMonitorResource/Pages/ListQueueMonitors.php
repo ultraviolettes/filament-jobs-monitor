@@ -31,6 +31,11 @@ class ListQueueMonitors extends ListRecords
         return __('filament-jobs-monitor::translations.title');
     }
 
+    public static function getNavigationLabel(): string
+    {
+        return __('filament-jobs-monitor::translations.queued_jobs');
+    }
+
     public function getTabs(): array
     {
         return [

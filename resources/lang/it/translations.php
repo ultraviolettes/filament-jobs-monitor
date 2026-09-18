@@ -7,6 +7,7 @@ return [
     'failed' => 'Fallito',
     'name' => 'Nome',
     'navigation_group' => 'Impostazioni',
+    'plural_model_label' => 'Lavori',
     'navigation_label' => 'Lavori',
     'pending_jobs' => 'Lavori in sospeso',
     'progress' => 'Progresso',

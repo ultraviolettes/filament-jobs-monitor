@@ -4,6 +4,7 @@ return [
     'breadcrumb' => 'Monitor de Jobs En File',
     'title' => 'Jobs',
     'model_label' => 'Job',
+    'plural_model_label' => 'Jobs',
     'navigation_label' => 'Jobs',
     'navigation_group' => 'Paramètres',
     'total_jobs' => 'Total Jobs Exécutés',

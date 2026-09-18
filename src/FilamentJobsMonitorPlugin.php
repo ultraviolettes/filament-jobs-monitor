@@ -23,9 +23,10 @@ class FilamentJobsMonitorPlugin implements Plugin
     protected string|Closure|null $pluralLabel = null;
 
     /**
-     * The resource navigation status.
+     * The resource navigation status. Null falls back to the
+     * `resources.enabled` config key.
      */
-    protected bool|Closure $navigation = true;
+    protected bool|Closure|null $navigation = null;
 
     /**
      * The resource cluster.
@@ -250,7 +251,7 @@ class FilamentJobsMonitorPlugin implements Plugin
      */
     public function shouldRegisterNavigation(): bool
     {
-        return $this->evaluate($this->navigation) === true ?? config('filament-jobs-monitor.resources.enabled');
+        return (bool) ($this->evaluate($this->navigation) ?? config('filament-jobs-monitor.resources.enabled', true));
     }
 
     /**

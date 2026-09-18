@@ -2,6 +2,17 @@
 
 All notable changes to `filament-jobs-monitor` will be documented in this file.
 
+## 4.6.1 - 2026-09-18
+
+### Fixed
+
+- **Localised "Job History" sub-navigation label**: the first entry of the Jobs / Pending / Failures sub-navigation had no label of its own, so Filament derived an English "List Queue Monitors" from the page class name whatever the panel locale. `ListQueueMonitors` now uses the existing `queued_jobs` key, like its two siblings. ([@saythe0](https://github.com/saythe0) — #149)
+- **Dedicated `plural_model_label` key**: `resources.plural_label` now defaults to `filament-jobs-monitor::translations.plural_model_label` instead of reusing `navigation_label`, and the key exists in all 15 locales. Published configs still pointing at `navigation_label` keep working unchanged. ([@saythe0](https://github.com/saythe0) — #149)
+
+### Changed
+
+- **Supply-chain hardening of the CI**: every GitHub Action is pinned to a full commit SHA, Dependabot now also covers the npm ecosystem (`package-lock.json`), and both ecosystems get an update cooldown. CI configuration only, no source change. (#150)
+
 ## 4.6.0 - 2026-08-24
 
 ### Added

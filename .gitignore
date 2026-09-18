@@ -10,3 +10,4 @@ testbench.yaml
 vendor
 node_modules
 .phpunit.cache
+.omc/

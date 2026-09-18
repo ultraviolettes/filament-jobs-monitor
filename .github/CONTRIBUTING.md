@@ -2,7 +2,7 @@
 
 Contributions are **welcome** and will be fully **credited**.
 
-Please read and understand the contribution guide before creating an issue or pull request.
+Please read and understand the contribution guide before creating an issue or pull request. By participating, you agree to abide by the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Etiquette
 
@@ -40,9 +40,11 @@ Before submitting a pull request:
 
 If the project maintainer has any additional requirements, you will find them listed here.
 
-- **[PSR-2 Coding Standard](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md)** - The easiest way to apply the conventions is to install [PHP Code Sniffer](https://pear.php.net/package/PHP_CodeSniffer).
+- **Code style** - The project uses [Laravel Pint](https://laravel.com/docs/pint). Run `composer lint` before pushing.
 
-- **Add tests!** - Your patch won't be accepted if it doesn't have tests.
+- **Static analysis** - `composer analyse` runs PHPStan (Larastan) and must stay clean. Do not add entries to `phpstan-baseline.neon` to silence new errors.
+
+- **Add tests!** - Your patch won't be accepted if it doesn't have tests. Run them with `composer test`.
 
 - **Document any change in behaviour** - Make sure the `README.md` and any other relevant documentation are kept up-to-date.
 

@@ -1,6 +1,8 @@
 # Background Jobs monitoring like Horizon for all drivers for FilamentPHP
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/croustibat/filament-jobs-monitor.svg?style=flat-square)](https://packagist.org/packages/croustibat/filament-jobs-monitor)
+[![Tests](https://img.shields.io/github/actions/workflow/status/ultraviolettes/filament-jobs-monitor/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/ultraviolettes/filament-jobs-monitor/actions/workflows/run-tests.yml)
+[![PHPStan](https://img.shields.io/github/actions/workflow/status/ultraviolettes/filament-jobs-monitor/phpstan.yml?branch=main&label=phpstan&style=flat-square)](https://github.com/ultraviolettes/filament-jobs-monitor/actions/workflows/phpstan.yml)
 [![Total Downloads](https://img.shields.io/packagist/dt/croustibat/filament-jobs-monitor.svg?style=flat-square)](https://packagist.org/packages/croustibat/filament-jobs-monitor)
 
 This is a package to monitor background jobs for FilamentPHP. It is inspired by Laravel Horizon and is compatible with all drivers.

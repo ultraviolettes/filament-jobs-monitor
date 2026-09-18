@@ -1,5 +1,5 @@
 # Please see the documentation for all configuration options:
-# https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+# https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference
 
 version: 2
 updates:
@@ -10,3 +10,19 @@ updates:
       interval: "weekly"
     labels:
       - "dependencies"
+    # Actions are pinned to a commit SHA, so let a release settle before
+    # adopting it rather than tracking every freshly published tag.
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 3

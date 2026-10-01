@@ -2,6 +2,12 @@
 
 All notable changes to `filament-jobs-monitor` will be documented in this file.
 
+## 4.6.3 - 2026-10-01
+
+### Fixed
+
+- **Filament panels lost their spacing since 4.6.0**: the stylesheet wrapped in `@layer components` for #145 is printed by `@filamentStyles`, before the panel theme, so it was the first to name a layer and ranked `components` below `base`. Tailwind's preflight (`* { margin: 0; padding: 0 }`) then won over every `fi-*` component: topbar, sidebar, tables and forms lost their padding and gaps on every page of the panel. The build now prepends Tailwind's layer order (`@layer properties,theme,base,components,utilities;`), and a test checks it against the order of Filament's own theme.
+
 ## 4.6.2 - 2026-09-18
 
 ### Fixed

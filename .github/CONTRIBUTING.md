@@ -59,6 +59,12 @@ If the project maintainer has any additional requirements, you will find them li
 The compiled stylesheet under `resources/dist/` is committed, so rebuild it with `npm run build`
 (never `npx tailwindcss` on its own) whenever you touch a Blade view or a class name in `src/`.
 
+`npm run build` is deterministic: rebuilding an unchanged checkout must leave
+`resources/dist/filament-jobs-monitor.css` byte for byte identical, and the `Build assets` workflow
+fails otherwise. Nothing in the build may fetch anything over the network (the old `filament-purge`
+step downloaded Filament's stylesheet from GitHub at build time, which is why it was removed — see
+issue #168).
+
 The build ends with an `npm run layer` step that wraps the output in `@layer components`. This is
 not cosmetic: the stylesheet is registered globally through `FilamentAsset`, so it loads on every
 page of every panel of the host application, and unlayered CSS outranks anything inside

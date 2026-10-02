@@ -1,0 +1,57 @@
+name: Build assets
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tailwind.config.js'
+      - 'postcss.config.js'
+      - 'resources/css/**'
+      - 'resources/dist/**'
+      - 'resources/views/**'
+      - 'src/**'
+      - '.github/workflows/build-assets.yml'
+  pull_request:
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tailwind.config.js'
+      - 'postcss.config.js'
+      - 'resources/css/**'
+      - 'resources/dist/**'
+      - 'resources/views/**'
+      - 'src/**'
+      - '.github/workflows/build-assets.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  reproducible:
+    name: committed stylesheet matches a rebuild
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Rebuild the stylesheet
+        run: npm run build
+
+      # The build has to be a pure function of the checkout: the stylesheet ships
+      # committed under resources/dist/ and the pull request template asks
+      # contributors to rebuild it. See issue #168.
+      - name: Fail if the committed build is out of date
+        run: git diff --exit-code -- resources/dist

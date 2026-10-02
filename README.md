@@ -64,6 +64,7 @@ return [
         'resource' => Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource::class,
         'cluster' => null,
         'sub_navigation_position' => null, // SubNavigationPosition::Top or ::Sidebar
+        'polling_interval' => null, // e.g. '10s' to auto-refresh the job tables
     ],
     'failures' => [
         'enabled' => true,
@@ -87,6 +88,8 @@ return [
 **NOTE:** `label`, `plural_label` and `navigation_group` default to translation keys, so they follow the panel locale. Replace any of them with a plain string (`'label' => 'Job'`) to hard-code it: a value carrying neither a `::` namespace nor a `.` group is used verbatim and is never looked up in your application's JSON translation catalogue.
 
 **NOTE:** Since there isn't a universal way to retrieve all used queues, it's necessary to define them to obtain all pending jobs. 
+
+**NOTE:** `resources.polling_interval` makes the **Job History** and **Pending jobs** tables refresh on their own, so the progress of a long-running job can be watched without reloading the page. It is disabled by default (`null`): a refresh of the Job History table also re-runs its four tab count badges, which is one count query per tab, so the interval is left to you. Any value Filament's `poll()` accepts works — `'5s'`, `'10s'`, `'1m'`. The **Failures** page has its own `failures.polling_interval`, already set to `'10s'`.
 
 ### Failures page
 

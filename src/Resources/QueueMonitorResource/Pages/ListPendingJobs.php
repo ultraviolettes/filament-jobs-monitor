@@ -82,6 +82,7 @@ class ListPendingJobs extends Page implements HasTable
             ->bulkActions([
                 DeleteBulkAction::make(),
             ])
+            ->poll(config('filament-jobs-monitor.resources.polling_interval'))
             ->emptyStateHeading(__('filament-jobs-monitor::translations.no_pending_jobs'))
             ->emptyStateDescription(__('filament-jobs-monitor::translations.no_pending_jobs_description'));
     }

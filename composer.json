@@ -44,7 +44,8 @@
     "scripts": {
         "analyse": "vendor/bin/phpstan analyse",
         "lint": "vendor/bin/pint",
-        "test": "vendor/bin/pest"
+        "test": "vendor/bin/pest --no-coverage",
+        "test:coverage": "vendor/bin/pest --coverage"
     },
     "config": {
         "sort-packages": true,
@@ -58,10 +59,7 @@
             "providers": [
                 "Croustibat\\FilamentJobsMonitor\\FilamentJobsMonitorServiceProvider",
                 "Croustibat\\FilamentJobsMonitor\\QueueMonitorProvider"
-            ],
-            "aliases": {
-                "QueueMonitor": "Croustibat\\FilamentJobsMonitor\\QueueMonitorProvider\\Facade"
-            }
+            ]
         }
     },
     "minimum-stability": "dev",

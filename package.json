@@ -8,7 +8,7 @@
         "purge": "filament-purge -i resources/dist/filament-jobs-monitor.css -o resources/dist/filament-jobs-monitor.css",
         "dev": "npm-run-all --parallel dev:*",
         "build": "npm-run-all build:*",
-        "layer": "node -e \"const fs=require('fs'),f='resources/dist/filament-jobs-monitor.css',c=fs.readFileSync(f,'utf8').trim();if(c&&!c.startsWith('@layer components{'))fs.writeFileSync(f,'@layer components{'+c+'}')\""
+        "layer": "node -e \"const fs=require('fs'),f='resources/dist/filament-jobs-monitor.css',o='@layer properties,theme,base,components,utilities;';let c=fs.readFileSync(f,'utf8').trim();if(c.startsWith(o))c=c.slice(o.length);if(c&&!c.startsWith('@layer components{'))c='@layer components{'+c+'}';fs.writeFileSync(f,o+c)\""
     },
     "devDependencies": {
         "@awcodes/filament-plugin-purge": "^1.0.2",

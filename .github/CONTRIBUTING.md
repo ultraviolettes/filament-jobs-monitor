@@ -64,6 +64,11 @@ not cosmetic: the stylesheet is registered globally through `FilamentAsset`, so 
 page of every panel of the host application, and unlayered CSS outranks anything inside
 `@layer utilities` — where Filament emits the app's own utilities — regardless of source order.
 Shipping a bare `.hidden` is enough to break `hidden md:block` app-wide (see #145).
-`tests/Feature/PluginStylesheetTest.php` fails if the committed build ever loses its layer.
+The same step also prepends `@layer properties,theme,base,components,utilities;`. `@filamentStyles`
+prints plugin stylesheets before the panel theme, so this file is parsed first, and the first time a
+layer is named fixes its rank: without that statement `components` would rank below `base`, and
+Tailwind's preflight would strip the padding and margins of every Filament component.
+`tests/Feature/PluginStylesheetTest.php` fails if the committed build ever loses its layer or that
+statement, or if the statement drifts from the order Filament's own theme creates its layers in.
 
 **Happy coding**!

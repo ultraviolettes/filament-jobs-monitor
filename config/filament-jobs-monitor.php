@@ -22,6 +22,12 @@ return [
          * Default: null (uses Filament default)
          */
         'sub_navigation_position' => null,
+        /**
+         * Table polling interval for the Job History and Pending jobs pages
+         * (null to disable). Opt-in, because a poll also re-runs the four tab
+         * count badges and the stats overview widget on the Job History page.
+         */
+        'polling_interval' => null,
     ],
     'failures' => [
         /**

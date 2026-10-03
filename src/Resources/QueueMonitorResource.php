@@ -317,7 +317,8 @@ class QueueMonitorResource extends Resource
                                 ->whereNull('finished_at');
                         }
                     }),
-            ]);
+            ])
+            ->poll(config('filament-jobs-monitor.resources.polling_interval'));
     }
 
     public static function getNavigationBadge(): ?string

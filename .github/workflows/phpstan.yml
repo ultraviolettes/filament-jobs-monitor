@@ -1,7 +1,11 @@
 name: PHPStan
 
+# See the note in run-tests.yml: `push` is limited to the default branch so a
+# pull request is analysed once, not twice.
 on:
   push:
+    branches:
+      - main
     paths:
       - '**.php'
       - 'phpstan.neon.dist'

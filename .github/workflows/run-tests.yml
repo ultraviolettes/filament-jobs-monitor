@@ -1,9 +1,13 @@
 name: run-tests
 
+# A branch pushed to this repository with an open pull request matched both
+# triggers, so every pull request ran the whole 6-job matrix twice. `push` is now
+# limited to the default branch; branch pushes are covered by `pull_request`,
+# which also covers forks.
 on:
   push:
     branches:
-      - '**'
+      - main
   pull_request:
     branches:
       - '**'

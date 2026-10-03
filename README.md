@@ -22,8 +22,9 @@ Check your filamentPHP version before installing:
 | 2.*     | 3.*         | \>= 8.1 |
 | 3.*     | 4.*         | \>= 8.1 |
 | 4.*     | 4.*, 5.*    | \>= 8.2 |
+| 5.*     | 5.*         | \>= 8.3 |
 
-`4.*` supports Laravel 11.28+, 12 and 13. Every Laravel × Filament combination is covered by the CI.
+`5.*` requires Filament 5 and supports Laravel 12 and 13. `4.*` still supports Filament 4 and Laravel 11.28+, and is maintained on the [`4.x` branch](https://github.com/ultraviolettes/filament-jobs-monitor/tree/4.x).
 
 
 Install the package via composer:

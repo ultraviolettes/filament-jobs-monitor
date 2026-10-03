@@ -1,5 +1,32 @@
 # Upgrade Guide
 
+## Upgrading from v4.x to v5.x
+
+v5 drops the compatibility layers v4 carried. Nothing in the plugin's own API changed in this step;
+the work is on your side of the dependency constraints.
+
+### Prerequisites
+
+- Filament **5** (v4 is no longer supported — see the [Filament v5 upgrade guide](https://filamentphp.com/docs/5.x/upgrade-guide))
+- Laravel **12 or 13**
+- PHP **8.3** or newer
+
+If you are still on Filament 4 or Laravel 11, stay on `^4.0`: the `4.x` branch keeps receiving fixes.
+
+### Step 1: Update the dependency
+
+```bash
+composer require croustibat/filament-jobs-monitor:^5.0
+```
+
+### Step 2: Republish the assets
+
+```bash
+php artisan filament:assets
+```
+
+Nothing else is required: the configuration keys, the plugin API and the database schema are unchanged.
+
 ## Upgrading from v2.x to v3.x (Filament v3 to v4)
 
 This guide will help you migrate your application from `filament-jobs-monitor` v2.x (Filament v3) to v3.x (Filament v4).

@@ -2,18 +2,13 @@
     "private": true,
     "scripts": {
         "dev:styles": "npx tailwindcss -i resources/css/plugin.css -o resources/dist/filament-jobs-monitor.css --postcss --watch",
-        "dev:scripts": "esbuild resources/js/plugin.js --bundle --sourcemap=inline --outfile=resources/dist/filament-jobs-monitor.js --watch",
-        "build:styles": "npx tailwindcss -i resources/css/plugin.css -o resources/dist/filament-jobs-monitor.css --postcss --minify && npm run purge && npm run layer",
-        "build:scripts": "esbuild resources/js/plugin.js --bundle --minify --outfile=resources/dist/filament-jobs-monitor.js",
-        "purge": "filament-purge -i resources/dist/filament-jobs-monitor.css -o resources/dist/filament-jobs-monitor.css",
+        "build:styles": "npx tailwindcss -i resources/css/plugin.css -o resources/dist/filament-jobs-monitor.css --postcss --minify && npm run layer",
         "dev": "npm-run-all --parallel dev:*",
         "build": "npm-run-all build:*",
         "layer": "node -e \"const fs=require('fs'),f='resources/dist/filament-jobs-monitor.css',o='@layer properties,theme,base,components,utilities;';let c=fs.readFileSync(f,'utf8').trim();if(c.startsWith(o))c=c.slice(o.length);if(c&&!c.startsWith('@layer components{'))c='@layer components{'+c+'}';fs.writeFileSync(f,o+c)\""
     },
     "devDependencies": {
-        "@awcodes/filament-plugin-purge": "^1.0.2",
         "autoprefixer": "^10.4.7",
-        "esbuild": "^0.8.57",
         "npm-run-all": "^4.1.5",
         "postcss": "^8.4.14",
         "prettier": "^2.7.1",

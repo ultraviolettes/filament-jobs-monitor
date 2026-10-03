@@ -18,17 +18,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Every Laravel x Filament pair declared in composer.json is exercised at
-        # least once, and each major is also resolved against its lowest versions.
+        # v5 targets Filament 5 only; Laravel 12 and 13 are both exercised, and
+        # Laravel 12 is also resolved against its lowest versions.
         include:
-          - { php: '8.2', laravel: '11.*', testbench: '^9.14', filament: '4.*', stability: prefer-lowest }
-          - { php: '8.3', laravel: '11.*', testbench: '^9.14', filament: '5.*', stability: prefer-stable }
-          - { php: '8.3', laravel: '12.*', testbench: '^10.10', filament: '4.*', stability: prefer-stable }
-          - { php: '8.4', laravel: '12.*', testbench: '^10.10', filament: '5.*', stability: prefer-lowest }
-          - { php: '8.4', laravel: '13.*', testbench: '^11.0', filament: '4.*', stability: prefer-stable }
-          - { php: '8.5', laravel: '13.*', testbench: '^11.0', filament: '5.*', stability: prefer-stable }
+          - { php: '8.3', laravel: '12.*', testbench: '^10.10', stability: prefer-lowest }
+          - { php: '8.4', laravel: '12.*', testbench: '^10.10', stability: prefer-stable }
+          - { php: '8.5', laravel: '13.*', testbench: '^11.0', stability: prefer-stable }
 
-    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} - Filament ${{ matrix.filament }} - ${{ matrix.stability }}
+    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} - ${{ matrix.stability }}
 
     steps:
       - name: Checkout code
@@ -43,8 +40,22 @@ jobs:
 
       - name: Install dependencies
         run: |
-          composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "filament/filament:${{ matrix.filament }}" --no-interaction --no-update
+          composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
           composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
 
       - name: Execute tests
         run: vendor/bin/pest --no-coverage
+
+  # Single stable context for branch protection: the matrix can change freely
+  # without the required check having to be renamed in the repository settings.
+  tests:
+    name: tests
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+
+    steps:
+      - name: Fail unless every matrix job succeeded
+        run: |
+          echo "matrix result: ${{ needs.test.result }}"
+          test "${{ needs.test.result }}" = "success"

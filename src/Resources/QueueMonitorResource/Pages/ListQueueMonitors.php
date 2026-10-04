@@ -2,6 +2,7 @@
 
 namespace Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Pages;
 
+use Croustibat\FilamentJobsMonitor\Authorization;
 use Croustibat\FilamentJobsMonitor\Models\QueueJob;
 use Croustibat\FilamentJobsMonitor\Models\QueueMonitor;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource;
@@ -29,6 +30,11 @@ class ListQueueMonitors extends ListRecords
     public function getTitle(): string
     {
         return __('filament-jobs-monitor::translations.title');
+    }
+
+    public static function canAccess(array $parameters = []): bool
+    {
+        return Authorization::allows(Authorization::VIEW_ANY);
     }
 
     public static function getNavigationLabel(): string

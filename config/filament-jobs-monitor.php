@@ -6,6 +6,20 @@ return [
 
     'connection' => null,
 
+    'authorization' => [
+        /**
+         * What happens when an ability is covered by neither a policy on the
+         * QueueMonitor model, a gate of the same name, nor an `authorize*()`
+         * call on the plugin.
+         *
+         * false (default since v5): the ability is denied, so viewing job
+         * payloads, retrying, deleting and clearing the logs all have to be
+         * granted explicitly. Set it to true to restore the v4 behaviour,
+         * where everyone reaching the panel could do everything.
+         */
+        'fallback' => false,
+    ],
+
     'resources' => [
         'enabled' => true,
         'label' => 'filament-jobs-monitor::translations.model_label',

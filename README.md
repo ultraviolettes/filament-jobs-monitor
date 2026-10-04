@@ -288,6 +288,77 @@ Then you can call your Job with the following code:
     }
 ```
 
+## Authorization
+
+Since v5 the plugin denies its abilities by default: reaching the panel is no longer enough to read
+job payloads — which routinely contain customer data — or to retry, delete and truncate.
+
+| Ability | Gate name | Policy method | Covers |
+| --- | --- | --- | --- |
+| View | `viewAnyQueueMonitor` | `viewAny` | the resource, the three pages and their routes |
+| Retry | `retryQueueMonitor` | `retry` | retry, bulk retry, retry all failed, retry a failure group |
+| Delete | `deleteQueueMonitor` | `delete` | deleting monitor records |
+| Clear logs | `clearQueueMonitorLogs` | `clearLogs` | the "Clear logs" action, which truncates the table |
+| Delete pending job | `deletePendingJob` | `deletePendingJob` | deleting queued jobs on the Pending page |
+| Resolve failure | `resolveQueueMonitorFailure` | `resolveFailure` | marking a failure group resolved, and reopening it |
+
+Each ability is resolved in this order, first match wins:
+
+1. the closure or boolean set on the plugin;
+2. a policy registered for the `QueueMonitor` model, when it implements the method;
+3. a gate of the same name;
+4. the `authorization.fallback` config key (`false`).
+
+Denied abilities hide their action instead of failing on click, and a denied *View* makes the routes
+return 403 rather than only hiding the navigation entry.
+
+### With the plugin
+
+```php
+FilamentJobsMonitorPlugin::make()
+    ->authorize(fn () => auth()->user()?->hasRole('admin'))
+    ->authorizeRetry(fn () => auth()->user()?->can('retry_jobs'))
+    ->authorizeClearLogs(fn () => auth()->user()?->hasRole('super-admin'))
+```
+
+The closure receives the record when the ability targets one. The other methods are
+`authorizeDelete()`, `authorizeDeletePendingJob()` and `authorizeResolveFailure()`.
+
+### With a policy
+
+```php
+// app/Policies/QueueMonitorPolicy.php
+public function viewAny(User $user): bool
+{
+    return $user->hasPermissionTo('view jobs');
+}
+
+public function clearLogs(User $user): bool
+{
+    return $user->hasRole('super-admin');
+}
+```
+
+```php
+// AppServiceProvider::boot()
+Gate::policy(\Croustibat\FilamentJobsMonitor\Models\QueueMonitor::class, QueueMonitorPolicy::class);
+```
+
+Plain gates (`Gate::define('clearQueueMonitorLogs', ...)`) and `spatie/laravel-permission` work the
+same way, since both end up behind `Gate`. With **Filament Shield**, generate a policy for
+`QueueMonitor` and add the abilities above to it.
+
+### Keeping the old behaviour
+
+```php
+// config/filament-jobs-monitor.php
+'authorization' => [
+    'fallback' => true,
+],
+```
+
+Everyone who can reach the panel can then do everything, as in v4.
+
 ### Enabling navigation
 
 The navigation item is shown by default. When `enableNavigation()` is not called, it follows the `resources.enabled` config key; the fluent method always takes precedence over the config.

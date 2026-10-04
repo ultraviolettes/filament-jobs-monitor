@@ -1,18 +1,17 @@
 {
     "private": true,
     "scripts": {
-        "dev:styles": "npx tailwindcss -i resources/css/plugin.css -o resources/dist/filament-jobs-monitor.css --postcss --watch",
-        "build:styles": "npx tailwindcss -i resources/css/plugin.css -o resources/dist/filament-jobs-monitor.css --postcss --minify && npm run layer",
+        "dev:styles": "tailwindcss -i resources/css/plugin.css -o resources/dist/filament-jobs-monitor.css --watch",
+        "build:styles": "tailwindcss -i resources/css/plugin.css -o resources/dist/filament-jobs-monitor.css --minify && npm run layer",
         "dev": "npm-run-all --parallel dev:*",
         "build": "npm-run-all build:*",
         "layer": "node -e \"const fs=require('fs'),f='resources/dist/filament-jobs-monitor.css',o='@layer properties,theme,base,components,utilities;';let c=fs.readFileSync(f,'utf8').trim();if(c.startsWith(o))c=c.slice(o.length);if(c&&!c.startsWith('@layer components{'))c='@layer components{'+c+'}';fs.writeFileSync(f,o+c)\""
     },
     "devDependencies": {
-        "autoprefixer": "^10.4.7",
+        "@tailwindcss/cli": "^4.3",
         "npm-run-all": "^4.1.5",
-        "postcss": "^8.4.14",
         "prettier": "^2.7.1",
         "prettier-plugin-tailwindcss": "^0.1.13",
-        "tailwindcss": "^3.1.6"
+        "tailwindcss": "^4.3"
     }
 }

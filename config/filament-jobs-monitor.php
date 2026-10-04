@@ -12,12 +12,16 @@ return [
          * QueueMonitor model, a gate of the same name, nor an `authorize*()`
          * call on the plugin.
          *
-         * false (default since v5): the ability is denied, so viewing job
-         * payloads, retrying, deleting and clearing the logs all have to be
-         * granted explicitly. Set it to true to restore the v4 behaviour,
-         * where everyone reaching the panel could do everything.
+         * true (default): everyone who can reach the panel can do everything,
+         * as before v5.
+         *
+         * false (recommended): the ability is denied unless it is granted, so
+         * reading job payloads — which routinely carry customer data — as well
+         * as retrying, deleting and clearing the logs all have to be allowed
+         * explicitly. Grant them with a policy, a gate or the plugin's
+         * `authorize*()` methods; see the Authorization section of the README.
          */
-        'fallback' => false,
+        'fallback' => true,
     ],
 
     'resources' => [

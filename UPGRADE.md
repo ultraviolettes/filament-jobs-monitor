@@ -19,30 +19,30 @@ If you are still on Filament 4 or Laravel 11, stay on `^4.0`: the `4.x` branch k
 composer require croustibat/filament-jobs-monitor:^5.0
 ```
 
-### Step 2: Grant the abilities
+### Step 2: Consider locking the abilities down
 
-**This is the breaking change of v5.** The plugin used to let anyone who could reach the panel read
-job payloads, retry, delete and truncate the monitor table. Those abilities are now denied unless a
-policy, a gate or the plugin grants them, so after upgrading the resource disappears until you do.
+Nothing to do here to keep the panel working: viewing, retrying, deleting and clearing the logs
+stay open to everyone who can reach the panel, exactly as in v4.
 
-The quickest way back to a working panel:
+What v5 adds is the ability to check them. Job payloads routinely carry customer data and "Clear
+logs" truncates the monitor table, so on a panel with several roles it is worth granting the
+abilities explicitly and then closing the door:
 
 ```php
 FilamentJobsMonitorPlugin::make()
     ->authorize(fn () => auth()->user()?->hasRole('admin'))
+    ->authorizeClearLogs(fn () => auth()->user()?->hasRole('super-admin'))
 ```
-
-or, to postpone the decision and keep the v4 behaviour:
 
 ```php
 // config/filament-jobs-monitor.php
 'authorization' => [
-    'fallback' => true,
+    'fallback' => false, // refuse anything the application did not grant
 ],
 ```
 
-See the Authorization section of the README for the full list of abilities, their gate names and
-their policy methods.
+Policies on the `QueueMonitor` model and plain gates work too. See the Authorization section of the
+README for the full list of abilities, their gate names and their policy methods.
 
 ### Step 3: Check the sub-navigation position
 

@@ -408,8 +408,19 @@ $monitor->chain();  // Collection<QueueMonitor>, the steps of the chain in run o
 This needs the `add_batches_to_filament-jobs-monitor_table` migration. Without it the package keeps
 working exactly as before: the schema check is memoized, so a long-running worker pays for it once.
 
-`chain_id` is stored and queried by `chain()`, but nothing populates it yet — Laravel has no chain
-identifier, and propagating one through a chain needs a design decision (see #181).
+Chain tracking is opt-in, because it unserializes the command of every dispatched job:
+
+```php
+FilamentJobsMonitorPlugin::make()->enableChainsTracking()
+// or 'chains' => ['enabled' => true] in the config
+```
+
+Laravel has no chain identifier — a chain is a linked list, and
+`Queueable::dispatchNextJobInChain()` mutates the next job before dispatching it — so the plugin
+writes one into the payload when the chain starts and carries it forward: while a chained job runs,
+the worker remembers its id and the class the next step must have, and the continuation inherits it.
+The expectation is consumed on the first match, so an unrelated job dispatched from inside a chained
+job does not join the chain.
 
 ### Slow job detection
 

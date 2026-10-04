@@ -4,6 +4,7 @@ namespace Croustibat\FilamentJobsMonitor;
 
 use Closure;
 use Filament\Contracts\Plugin;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
 use UnitEnum;
@@ -52,6 +53,11 @@ class FilamentJobsMonitorPlugin implements Plugin
      * The resource navigation count badge status.
      */
     protected ?bool $navigationCountBadge = null;
+
+    /**
+     * The position of the Job History / Pending / Failures sub-navigation.
+     */
+    protected SubNavigationPosition|Closure|null $subNavigationPosition = null;
 
     /**
      * The authorization callbacks, keyed by ability.
@@ -267,6 +273,36 @@ class FilamentJobsMonitorPlugin implements Plugin
     public function enableNavigation(bool|Closure $callback = true): static
     {
         $this->navigation = $callback;
+
+        return $this;
+    }
+
+    /**
+     * Get the sub-navigation position.
+     *
+     * Defaults to `Top`: the three pages are wide tables, and a sidebar eats a
+     * meaningful chunk of their horizontal space.
+     */
+    public function getSubNavigationPosition(): SubNavigationPosition
+    {
+        $position = $this->evaluate($this->subNavigationPosition)
+            ?? config('filament-jobs-monitor.resources.sub_navigation_position');
+
+        if ($position instanceof SubNavigationPosition) {
+            return $position;
+        }
+
+        return filled($position)
+            ? SubNavigationPosition::from($position)
+            : SubNavigationPosition::Top;
+    }
+
+    /**
+     * Set the sub-navigation position.
+     */
+    public function subNavigationPosition(SubNavigationPosition|Closure $position): static
+    {
+        $this->subNavigationPosition = $position;
 
         return $this;
     }

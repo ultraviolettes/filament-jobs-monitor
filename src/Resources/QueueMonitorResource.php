@@ -388,11 +388,7 @@ class QueueMonitorResource extends Resource
 
     public static function getSubNavigationPosition(): SubNavigationPosition
     {
-        if (filled(config('filament-jobs-monitor.resources.sub_navigation_position'))) {
-            return config('filament-jobs-monitor.resources.sub_navigation_position');
-        }
-
-        return parent::getSubNavigationPosition();
+        return FilamentJobsMonitorPlugin::get()->getSubNavigationPosition();
     }
 
     public static function getNavigationIcon(): string

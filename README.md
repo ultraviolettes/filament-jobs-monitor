@@ -64,7 +64,7 @@ return [
         'navigation_count_badge' => false,
         'resource' => Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource::class,
         'cluster' => null,
-        'sub_navigation_position' => null, // SubNavigationPosition::Top or ::Sidebar
+        'sub_navigation_position' => null, // SubNavigationPosition::Top, ::Start or ::End
         'polling_interval' => null, // e.g. '10s' to auto-refresh the job tables
     ],
     'failures' => [
@@ -358,6 +358,23 @@ same way, since both end up behind `Gate`. With **Filament Shield**, generate a 
 ```
 
 Everyone who can reach the panel can then do everything, as in v4.
+
+### Sub-navigation layout
+
+The Job History / Pending / Failures sub-navigation sits on top by default, because the three pages
+are wide tables and a side column eats their horizontal space. Move it with the plugin:
+
+```php
+        // AdminPanelProvider.php
+        ->plugins([
+            FilamentJobsMonitorPlugin::make()
+                ->subNavigationPosition(SubNavigationPosition::Start),
+        ])
+```
+
+or with the `resources.sub_navigation_position` config key, which the plugin method overrides.
+`SubNavigationPosition::Start`, `::End` and `::Top` are Filament's three positions; the matching
+strings (`'start'`, `'end'`, `'top'`) are accepted in the config file.
 
 ### Enabling navigation
 

@@ -31,9 +31,10 @@ return [
         'resource' => QueueMonitorResource::class,
         'cluster' => null,
         /**
-         * Configure the sub-navigation position for the resource pages.
-         * Options: Filament\Pages\Enums\SubNavigationPosition::Top or ::Sidebar
-         * Default: null (uses Filament default)
+         * Position of the Job History / Pending / Failures sub-navigation.
+         * Options: Filament\Pages\Enums\SubNavigationPosition::Top, ::Start or
+         * ::End (the `top`, `start` and `end` strings work too).
+         * Default: null, which means Top — these pages are wide tables.
          */
         'sub_navigation_position' => null,
         /**

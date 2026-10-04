@@ -70,6 +70,15 @@ return [
      */
     'queues' => null,
 
+    'chains' => [
+        /**
+         * Give every step of a job chain the same `chain_id`. Opt-in: it
+         * unserializes the command of every dispatched job to see whether more
+         * steps follow. Requires the batches migration.
+         */
+        'enabled' => false,
+    ],
+
     'batches' => [
         /**
          * Opt-in Batches page, reading Laravel's `job_batches` table. It only

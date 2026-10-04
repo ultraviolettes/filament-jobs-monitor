@@ -308,6 +308,16 @@ class FilamentJobsMonitorPlugin implements Plugin
     }
 
     /**
+     * Enable chain tracking, which gives every step of a chain the same id.
+     */
+    public function enableChainsTracking(bool $status = true): static
+    {
+        config()->set('filament-jobs-monitor.chains.enabled', $status);
+
+        return $this;
+    }
+
+    /**
      * Enable the Batches page.
      */
     public function enableBatchesPage(bool $status = true): static

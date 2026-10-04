@@ -24,7 +24,10 @@ class QueueMonitorProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        // Chain ids have to be written when a job is dispatched: a chain is a
+        // linked list and the id cannot be derived afterwards. See Chains.
+        Queue::createPayloadUsing(static fn ($connection, $queue, $payload): array => Chains::payloadFor($payload));
+
         Queue::before(static function (JobProcessing $event) {
             self::jobStarted($event->job);
         });
@@ -120,8 +123,11 @@ class QueueMonitorProvider extends ServiceProvider
             $attributes['tenant_id'] = $tenantId;
         }
 
+        $chainId = Chains::enter($job->payload());
+
         if (self::supportsBatchTracking()) {
             $attributes['batch_id'] = self::getBatchId($job);
+            $attributes['chain_id'] = $chainId;
         }
 
         $monitor = resolve(QueueMonitor::class)::on(self::getConnection())->create($attributes);
@@ -195,6 +201,8 @@ class QueueMonitorProvider extends ServiceProvider
         }
 
         $monitor->update($attributes);
+
+        Chains::leave();
 
         self::reportIfSlow($monitor, $failed);
     }

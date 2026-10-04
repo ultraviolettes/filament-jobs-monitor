@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use Closure;
 use Croustibat\FilamentJobsMonitor\Models\QueueMonitor;
+use Croustibat\FilamentJobsMonitor\QueueDiscovery;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Builder;
@@ -29,7 +30,7 @@ class QueueStatsOverview extends BaseWidget
             ->select($aggregationColumns)
             ->first();
 
-        $queueSize = collect(config('filament-jobs-monitor.queues') ?? ['default'])
+        $queueSize = collect(QueueDiscovery::all())
             ->map(fn (string $queue): int => Queue::size($queue))
             ->sum();
 

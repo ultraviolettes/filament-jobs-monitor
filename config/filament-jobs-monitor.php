@@ -70,6 +70,22 @@ return [
      */
     'queues' => null,
 
+    'batches' => [
+        /**
+         * Opt-in Batches page, reading Laravel's `job_batches` table. It only
+         * registers when batches are stored in the database.
+         */
+        'enabled' => false,
+        /**
+         * Table polling interval (null to disable).
+         */
+        'polling_interval' => '10s',
+        /**
+         * Age, in days, the "Prune finished batches" header action prunes past.
+         */
+        'retention_days' => 7,
+    ],
+
     'slow' => [
         /**
          * Flag runs that take unusually long, and dispatch JobMonitorSlow.

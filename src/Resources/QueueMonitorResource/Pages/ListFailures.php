@@ -5,7 +5,6 @@ namespace Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Pages;
 use Croustibat\FilamentJobsMonitor\Authorization;
 use Croustibat\FilamentJobsMonitor\Models\FailedJob;
 use Croustibat\FilamentJobsMonitor\Models\FailureGroup;
-use Croustibat\FilamentJobsMonitor\Models\QueueJob;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Widgets\FailureStatsOverview;
 use Filament\Actions\Action;
@@ -336,16 +335,6 @@ class ListFailures extends Page implements HasTable
 
     public function getSubNavigation(): array
     {
-        $items = [
-            ListQueueMonitors::class,
-        ];
-
-        if (resolve(QueueJob::class)::isSupported()) {
-            $items[] = ListPendingJobs::class;
-        }
-
-        $items[] = ListFailures::class;
-
-        return $this->generateNavigationItems($items);
+        return $this->generateNavigationItems(QueueMonitorResource::subNavigationPages());
     }
 }

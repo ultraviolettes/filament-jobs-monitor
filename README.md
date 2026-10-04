@@ -367,6 +367,35 @@ same way, since both end up behind `Gate`. With **Filament Shield**, generate a 
 Recommended once the abilities are granted: an ability nobody covered is then refused instead of
 allowed. Grant `viewAnyQueueMonitor` first, or the resource disappears from the panel.
 
+### Batches page
+
+Opt-in page listing Laravel's batches, next to Jobs / Pending / Failures:
+
+```php
+FilamentJobsMonitorPlugin::make()->enableBatchesPage()
+```
+
+```php
+// config/filament-jobs-monitor.php
+'batches' => [
+    'enabled' => true,
+    'polling_interval' => '10s',
+    'retention_days' => 7,  // age the "Prune finished batches" action prunes past
+],
+```
+
+It reads `job_batches` rather than duplicating its state, so progress, counts and status always
+match what Laravel knows, and it only registers when batches are stored in the database — the page
+and its route stay absent otherwise, instead of erroring. Rows carry **View** (the monitored jobs of
+the batch), **Retry** (`queue:retry-batch`) and **Cancel**, each behind the matching ability.
+
+On the Jobs table, a `Batch` column (hidden by default) links to the page, and a Batch filter lists
+the batches jobs were actually monitored in. Both appear only once the batches migration has been
+run.
+
+With multi-tenancy enabled, a batch belongs to the tenant of the jobs it ran — batches have no
+tenant of their own — so the page scopes them through `queue_monitors`.
+
 ### Batches and chains
 
 Jobs dispatched inside `Bus::batch()` record their batch, so a monitor can be tied back to it:

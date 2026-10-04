@@ -3,7 +3,6 @@
 namespace Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Pages;
 
 use Croustibat\FilamentJobsMonitor\Authorization;
-use Croustibat\FilamentJobsMonitor\Models\QueueJob;
 use Croustibat\FilamentJobsMonitor\Models\QueueMonitor;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Widgets\QueueStatsOverview;
@@ -73,18 +72,6 @@ class ListQueueMonitors extends ListRecords
 
     public function getSubNavigation(): array
     {
-        $items = [
-            ListQueueMonitors::class,
-        ];
-
-        if (resolve(QueueJob::class)::isSupported()) {
-            $items[] = ListPendingJobs::class;
-        }
-
-        if (config('filament-jobs-monitor.failures.enabled', true)) {
-            $items[] = ListFailures::class;
-        }
-
-        return $this->generateNavigationItems($items);
+        return $this->generateNavigationItems(QueueMonitorResource::subNavigationPages());
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Croustibat\FilamentJobsMonitor;
 
+use Croustibat\FilamentJobsMonitor\Events\JobMonitorSlow;
 use Croustibat\FilamentJobsMonitor\Models\FailureGroup;
 use Croustibat\FilamentJobsMonitor\Models\QueueMonitor;
 use Illuminate\Contracts\Queue\Job as JobContract;
@@ -190,6 +191,37 @@ class QueueMonitorProvider extends ServiceProvider
         }
 
         $monitor->update($attributes);
+
+        self::reportIfSlow($monitor, $failed);
+    }
+
+    /**
+     * Dispatch JobMonitorSlow for a successful run that took unusually long.
+     *
+     * Never let detection break job processing: a slow run is a signal, not a
+     * failure path.
+     */
+    protected static function reportIfSlow(QueueMonitor $monitor, bool $failed): void
+    {
+        if ($failed) {
+            return;
+        }
+
+        try {
+            $inspection = SlowJobs::inspect($monitor);
+
+            if ($inspection['slow']) {
+                JobMonitorSlow::dispatch(
+                    $monitor,
+                    (string) $inspection['reason'],
+                    (int) $inspection['duration'],
+                    $inspection['median'],
+                    $inspection['ratio'],
+                );
+            }
+        } catch (\Throwable) {
+            // Detection is best effort.
+        }
     }
 
     /**

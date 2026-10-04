@@ -1,5 +1,6 @@
 <?php
 
+use Croustibat\FilamentJobsMonitor\Chains;
 use Croustibat\FilamentJobsMonitor\Models\FailedJob;
 use Croustibat\FilamentJobsMonitor\Models\QueueMonitor;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource;
@@ -47,6 +48,8 @@ function renderDetails(QueueMonitor $record): string
         'record' => $record,
         'payload' => QueueMonitorResource::payloadFor($record),
         'failuresUrl' => QueueMonitorResource::failuresUrlFor($record),
+        'timeline' => Chains::timelineFor($record),
+        'chainUrl' => null,
     ])->render();
 }
 

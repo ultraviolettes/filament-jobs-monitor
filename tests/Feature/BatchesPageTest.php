@@ -38,10 +38,6 @@ function batch(array $attributes = []): JobBatch
 }
 
 beforeEach(function () {
-    // tracksBatches() is memoized for long-running workers, so it has to be
-    // reset between tests that run with and without the migration.
-    (new ReflectionProperty(QueueMonitorResource::class, 'tracksBatches'))->setValue(null, null);
-
     $migration = include __DIR__.'/../../database/migrations/create_filament-jobs-monitor_table.php.stub';
     $migration->up();
     $migration = include __DIR__.'/../../database/migrations/add_batches_to_filament-jobs-monitor_table.php.stub';

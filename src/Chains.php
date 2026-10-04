@@ -2,6 +2,9 @@
 
 namespace Croustibat\FilamentJobsMonitor;
 
+use Croustibat\FilamentJobsMonitor\Models\FailedJob;
+use Croustibat\FilamentJobsMonitor\Models\QueueMonitor;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -109,6 +112,68 @@ class Chains
         static::$expectedNextClass = null;
     }
 
+    /**
+     * The steps of the chain a job belongs to, for the detail timeline.
+     *
+     * `steps` are the monitored runs, in order. `neverReached` are the classes
+     * that would have come after the last one: a chain that broke leaves no row
+     * for them, so they are read off the serialized chain of the failed job.
+     *
+     * @return array{steps: Collection<int, QueueMonitor>, neverReached: array<int, string>, total: int, truncated: bool}
+     */
+    public static function timelineFor(QueueMonitor $record, int $limit = 50): array
+    {
+        $empty = ['steps' => new Collection, 'neverReached' => [], 'total' => 0, 'truncated' => false];
+
+        if (blank($record->chain_id)) {
+            return $empty;
+        }
+
+        $steps = $record->chain();
+        $total = $steps->count();
+
+        if ($total === 0) {
+            return $empty;
+        }
+
+        return [
+            'steps' => $steps->take($limit),
+            'neverReached' => static::neverReachedAfter($steps->last()),
+            'total' => $total,
+            'truncated' => $total > $limit,
+        ];
+    }
+
+    /**
+     * The classes the chain would have run next, if it stopped on a failure.
+     *
+     * @return array<int, string>
+     */
+    protected static function neverReachedAfter(?QueueMonitor $last): array
+    {
+        if ($last === null || ! $last->hasFailed()) {
+            return [];
+        }
+
+        $payload = resolve(FailedJob::class)::where('uuid', $last->job_id)->first()?->payload;
+        $command = $payload['data']['command'] ?? null;
+        $instance = static::unserializeCommand($command);
+
+        if (! is_object($instance) || ! property_exists($instance, 'chained')) {
+            return [];
+        }
+
+        $classes = [];
+
+        foreach ((array) $instance->chained as $entry) {
+            if (is_string($entry) && preg_match('/^O:\d+:"([^"]+)"/', $entry, $matches)) {
+                $classes[] = $matches[1];
+            }
+        }
+
+        return $classes;
+    }
+
     public static function currentChainId(): ?string
     {
         return static::$currentChainId;
@@ -162,6 +227,12 @@ class Chains
             return null;
         }
 
-        return is_object($instance) ? $instance : null;
+        // A job class that no longer exists unserializes to an incomplete
+        // object, which throws on any property access.
+        if (! is_object($instance) || $instance instanceof \__PHP_Incomplete_Class) {
+            return null;
+        }
+
+        return $instance;
     }
 }

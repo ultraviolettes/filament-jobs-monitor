@@ -34,6 +34,8 @@ return [
     'finished_at' => 'Завершено',
     'job_id' => 'ID задания',
     'view_failure_group' => 'Открыть группу ошибок',
+    'from' => 'С',
+    'until' => 'По',
     'details' => 'Подробнее',
     'attempts' => 'Попытки',
     'exception' => 'Исключение',

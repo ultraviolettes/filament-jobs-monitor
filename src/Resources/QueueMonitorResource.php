@@ -2,6 +2,7 @@
 
 namespace Croustibat\FilamentJobsMonitor\Resources;
 
+use Carbon\CarbonInterface;
 use Croustibat\FilamentJobsMonitor\Authorization;
 use Croustibat\FilamentJobsMonitor\Columns\ProgressColumn;
 use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
@@ -17,6 +18,7 @@ use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Widgets\QueueS
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -28,6 +30,7 @@ use Filament\Resources\Resource\Concerns\HasNavigation;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -88,6 +91,7 @@ class QueueMonitorResource extends Resource
                     ->searchable(false),
                 TextColumn::make('name')
                     ->label(__('filament-jobs-monitor::translations.name'))
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('queue')
                     ->label(__('filament-jobs-monitor::translations.queue'))
@@ -99,6 +103,24 @@ class QueueMonitorResource extends Resource
                     ->label(__('filament-jobs-monitor::translations.started_at'))
                     ->since()
                     ->sortable(),
+                TextColumn::make('duration')
+                    ->label(__('filament-jobs-monitor::translations.duration'))
+                    ->state(fn (QueueMonitor $record): ?string => static::durationFor($record))
+                    ->placeholder('—')
+                    // Sorted in SQL, on epoch seconds, so running jobs (no
+                    // finished_at) do not have to be hydrated to be ordered.
+                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderByRaw(
+                        resolve(QueueMonitor::class)::elapsedSeconds().' '.($direction === 'desc' ? 'desc' : 'asc')
+                    )),
+                TextColumn::make('attempt')
+                    ->label(__('filament-jobs-monitor::translations.attempts'))
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('finished_at')
+                    ->label(__('filament-jobs-monitor::translations.finished_at'))
+                    ->since()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('started_at', 'desc')
             ->actions([
@@ -280,6 +302,32 @@ class QueueMonitorResource extends Resource
                     }),
             ])
             ->filters([
+                SelectFilter::make('queue')
+                    ->label(__('filament-jobs-monitor::translations.queue'))
+                    ->options(fn (): array => resolve(QueueMonitor::class)::distinctQueues()),
+                Filter::make('started_at')
+                    ->schema([
+                        DatePicker::make('from')
+                            ->label(__('filament-jobs-monitor::translations.from')),
+                        DatePicker::make('until')
+                            ->label(__('filament-jobs-monitor::translations.until')),
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => $query
+                        ->when($data['from'] ?? null, fn (Builder $query, $date): Builder => $query->whereDate('started_at', '>=', $date))
+                        ->when($data['until'] ?? null, fn (Builder $query, $date): Builder => $query->whereDate('started_at', '<=', $date)))
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['from'] ?? null) {
+                            $indicators[] = __('filament-jobs-monitor::translations.from').': '.$data['from'];
+                        }
+
+                        if ($data['until'] ?? null) {
+                            $indicators[] = __('filament-jobs-monitor::translations.until').': '.$data['until'];
+                        }
+
+                        return $indicators;
+                    }),
                 SelectFilter::make('status')
                     ->label(__('filament-jobs-monitor::translations.status'))
                     ->options([
@@ -323,6 +371,22 @@ class QueueMonitorResource extends Resource
     public static function getNavigationLabel(): string
     {
         return Str::title(static::getPluralModelLabel());
+    }
+
+    /**
+     * How long a job ran, human readable, or null while it is still running.
+     */
+    public static function durationFor(QueueMonitor $record): ?string
+    {
+        if (! $record->started_at || ! $record->finished_at) {
+            return null;
+        }
+
+        return $record->started_at->diffForHumans($record->finished_at, [
+            'syntax' => CarbonInterface::DIFF_ABSOLUTE,
+            'short' => true,
+            'parts' => 2,
+        ]);
     }
 
     /**

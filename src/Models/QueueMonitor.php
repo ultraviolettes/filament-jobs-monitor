@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -126,6 +127,45 @@ class QueueMonitor extends Model
      * Methods
      *--------------------------------------------------------------------------
      */
+
+    /**
+     * A datetime column as epoch seconds, in the dialect of the current driver.
+     *
+     * Subtracting two datetimes directly is wrong on SQLite, where string
+     * coercion yields 0 — see issue #55.
+     */
+    public static function epochSeconds(string $column): string
+    {
+        return match (DB::connection(static::query()->getModel()->getConnectionName())->getDriverName()) {
+            'pgsql' => sprintf('CAST(EXTRACT(EPOCH FROM %s) AS INTEGER)', $column),
+            'sqlite' => "CAST(strftime('%s', {$column}) AS INTEGER)",
+            'mysql', 'mariadb' => sprintf('UNIX_TIMESTAMP(%s)', $column),
+            default => $column,
+        };
+    }
+
+    /**
+     * How long a job ran, in seconds, as a SQL expression.
+     */
+    public static function elapsedSeconds(string $start = 'started_at', string $end = 'finished_at'): string
+    {
+        return sprintf('(%s - %s)', static::epochSeconds($end), static::epochSeconds($start));
+    }
+
+    /**
+     * The queues that actually appear in the monitor table.
+     *
+     * @return array<string, string>
+     */
+    public static function distinctQueues(): array
+    {
+        return static::query()
+            ->whereNotNull('queue')
+            ->distinct()
+            ->orderBy('queue')
+            ->pluck('queue', 'queue')
+            ->all();
+    }
 
     public static function getJobId(JobContract $job): string|int
     {

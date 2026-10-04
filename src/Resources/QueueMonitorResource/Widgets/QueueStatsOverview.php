@@ -111,26 +111,13 @@ class QueueStatsOverview extends BaseWidget
 
     private function buildAggregateMode($mode, string $col1, string $col2, $driver = null): string
     {
+        // The epoch conversion lives on the model, which the duration column of
+        // the table sorts with too.
         return sprintf(
-            '%s(%s - %s)%s',
+            '%s%s%s',
             $mode,
-            $this->dbColumnAsInteger($col1),
-            $this->dbColumnAsInteger($col2),
+            resolve(QueueMonitor::class)::elapsedSeconds($col2, $col1),
             ($driver === 'pgsql' ? '::int' : '')
         );
-    }
-
-    private function dbColumnAsInteger(string $colName): string
-    {
-        // Convert a datetime column to epoch seconds using each driver's own
-        // function, so the duration aggregates work on SQLite/MySQL/Postgres
-        // alike. Falling back to a raw column subtraction is wrong on SQLite
-        // (string coercion yields 0) — see issue #55.
-        return match (DB::connection()->getConfig('driver')) {
-            'pgsql' => sprintf('CAST(EXTRACT(EPOCH FROM %s) AS INTEGER)', $colName),
-            'sqlite' => "CAST(strftime('%s', {$colName}) AS INTEGER)",
-            'mysql', 'mariadb' => sprintf('UNIX_TIMESTAMP(%s)', $colName),
-            default => $colName,
-        };
     }
 }

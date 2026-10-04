@@ -34,6 +34,8 @@ return [
     'finished_at' => 'Finished',
     'job_id' => 'Job ID',
     'view_failure_group' => 'View the failure group',
+    'from' => 'From',
+    'until' => 'Until',
     'details' => 'Details',
     'attempts' => 'Attempts',
     'exception' => 'Exception',

@@ -44,7 +44,17 @@ or, to postpone the decision and keep the v4 behaviour:
 See the Authorization section of the README for the full list of abilities, their gate names and
 their policy methods.
 
-### Step 3: Republish the assets
+### Step 3: Check the sub-navigation position
+
+The Job History / Pending / Failures sub-navigation now defaults to the top of the page instead of
+Filament's default side column, because those three pages are wide tables. To keep a side column:
+
+```php
+FilamentJobsMonitorPlugin::make()
+    ->subNavigationPosition(SubNavigationPosition::Start)
+```
+
+### Step 4: Republish the assets
 
 ```bash
 php artisan filament:assets

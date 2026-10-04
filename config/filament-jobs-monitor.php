@@ -63,8 +63,18 @@ return [
         'enabled' => true,
         'retention_days' => 7,
     ],
-    'queues' => [
-        'default',
+    /**
+     * Queues the dashboard reports on. null discovers them from the monitor
+     * table, the jobs and failed_jobs tables, the configured connections and
+     * Horizon's supervisors; an explicit array short-circuits discovery.
+     */
+    'queues' => null,
+
+    'queue_discovery' => [
+        /**
+         * Seconds the discovered list is cached for. 0 disables the cache.
+         */
+        'cache_ttl' => 60,
     ],
     'tenancy' => [
         'enabled' => false,

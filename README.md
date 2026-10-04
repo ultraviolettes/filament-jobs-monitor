@@ -75,8 +75,10 @@ return [
         'enabled' => true,
         'retention_days' => 7,
     ],
-    'queues' => [
-        'default'
+    'queues' => null, // null discovers them; or list them explicitly
+
+    'queue_discovery' => [
+        'cache_ttl' => 60,
     ],
     'tenancy' => [
         'enabled' => false,
@@ -88,7 +90,7 @@ return [
 
 **NOTE:** `label`, `plural_label` and `navigation_group` default to translation keys, so they follow the panel locale. Replace any of them with a plain string (`'label' => 'Job'`) to hard-code it: a value carrying neither a `::` namespace nor a `.` group is used verbatim and is never looked up in your application's JSON translation catalogue.
 
-**NOTE:** Since there isn't a universal way to retrieve all used queues, it's necessary to define them to obtain all pending jobs. 
+**NOTE:** `queues` is `null` by default, which discovers the queues instead of requiring a list: every queue seen in `queue_monitors`, in the `jobs` and `failed_jobs` tables, the default queue of each configured connection, and Horizon's supervised queues. That is what makes Redis and SQS work here — neither can enumerate its queues, but every queue a job ran on has been recorded. The result is cached for `queue_discovery.cache_ttl` seconds (60 by default). Setting `queues` to an explicit array skips discovery entirely.
 
 **NOTE:** `resources.polling_interval` makes the **Job History** and **Pending jobs** tables refresh on their own, so the progress of a long-running job can be watched without reloading the page. It is disabled by default (`null`): a refresh of the Job History table also re-runs its four tab count badges, which is one count query per tab, so the interval is left to you. Any value Filament's `poll()` accepts works — `'5s'`, `'10s'`, `'1m'`. The **Failures** page has its own `failures.polling_interval`, already set to `'10s'`.
 

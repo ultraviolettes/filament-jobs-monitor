@@ -57,7 +57,12 @@ If the project maintainer has any additional requirements, you will find them li
 ## Building the assets
 
 The compiled stylesheet under `resources/dist/` is committed, so rebuild it with `npm run build`
-(never `npx tailwindcss` on its own) whenever you touch a Blade view or a class name in `src/`.
+(never the Tailwind CLI on its own) whenever you touch a Blade view or a class name in `src/`.
+
+Tailwind 4 is configured from `resources/css/plugin.css` — there is no `tailwind.config.js`. The
+colour utilities are declared with `@theme inline` against Filament's own variables (`--primary-600`,
+`--gray-800`, …), so the stylesheet follows the colours configured on the panel. Keep it that way:
+hardcoding a palette here would make the plugin ignore the host panel's theme.
 
 `npm run build` is deterministic: rebuilding an unchanged checkout must leave
 `resources/dist/filament-jobs-monitor.css` byte for byte identical, and the `Build assets` workflow

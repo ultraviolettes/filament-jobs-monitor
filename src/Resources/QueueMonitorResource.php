@@ -4,6 +4,7 @@ namespace Croustibat\FilamentJobsMonitor\Resources;
 
 use Carbon\CarbonInterface;
 use Croustibat\FilamentJobsMonitor\Authorization;
+use Croustibat\FilamentJobsMonitor\Chains;
 use Croustibat\FilamentJobsMonitor\Columns\ProgressColumn;
 use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
 use Croustibat\FilamentJobsMonitor\Jobs\RetryFailedJobJob;
@@ -163,6 +164,8 @@ class QueueMonitorResource extends Resource
                         'record' => $record,
                         'payload' => static::payloadFor($record),
                         'failuresUrl' => static::failuresUrlFor($record),
+                        'timeline' => Chains::timelineFor($record),
+                        'chainUrl' => static::chainUrlFor($record),
                     ]))
                     ->extraModalFooterActions([
                         Action::make('retry_from_details')
@@ -325,6 +328,11 @@ class QueueMonitorResource extends Resource
                     ->visible(fn (): bool => static::tracksBatches())
                     ->searchable()
                     ->options(fn (): array => static::batchFilterOptions()),
+                SelectFilter::make('chain_id')
+                    ->label(__('filament-jobs-monitor::translations.chain'))
+                    ->visible(fn (): bool => static::tracksBatches())
+                    ->searchable()
+                    ->options(fn (): array => static::chainFilterOptions()),
                 Filter::make('started_at')
                     ->schema([
                         DatePicker::make('from')
@@ -445,6 +453,27 @@ class QueueMonitorResource extends Resource
     }
 
     /**
+     * The chains jobs were monitored in, newest first.
+     *
+     * @return array<string, string>
+     */
+    public static function chainFilterOptions(): array
+    {
+        if (! static::tracksBatches()) {
+            return [];
+        }
+
+        return resolve(QueueMonitor::class)::query()
+            ->whereNotNull('chain_id')
+            ->distinct()
+            ->orderByDesc('started_at')
+            ->limit(50)
+            ->pluck('chain_id', 'chain_id')
+            ->map(fn (string $id): string => Str::limit($id, 8, ''))
+            ->all();
+    }
+
+    /**
      * Why a run is flagged as slow, for the column tooltip.
      */
     public static function slowTooltipFor(QueueMonitor $record): ?string
@@ -538,6 +567,18 @@ class QueueMonitorResource extends Resource
         $payload = resolve(FailedJob::class)::where('uuid', $record->job_id)->first()?->payload;
 
         return is_array($payload) ? $payload : null;
+    }
+
+    /**
+     * The Jobs table, filtered on the chain of this job.
+     */
+    public static function chainUrlFor(QueueMonitor $record): ?string
+    {
+        if (blank($record->chain_id)) {
+            return null;
+        }
+
+        return ListQueueMonitors::getUrl(['tableFilters' => ['chain_id' => ['value' => $record->chain_id]]]);
     }
 
     /**

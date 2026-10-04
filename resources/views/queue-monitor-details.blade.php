@@ -36,6 +36,14 @@
         <div class="break-all font-mono text-xs text-gray-500 dark:text-gray-400">{{ $record->name }}</div>
     @endif
 
+    @if ($timeline['total'] > 0)
+        @include('filament-jobs-monitor::partials.chain-timeline', [
+            'timeline' => $timeline,
+            'current' => $record,
+            'chainUrl' => $chainUrl,
+        ])
+    @endif
+
     {{-- stack trace, only for a job that actually failed --}}
     @if ($record->hasFailed())
         @include('filament-jobs-monitor::partials.stack-trace', [

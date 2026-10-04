@@ -50,10 +50,6 @@ class UnrelatedJob implements ShouldQueue
 }
 
 beforeEach(function () {
-    // Memoized for long-running workers, so it has to be reset between tests
-    // that run with and without the batches migration.
-    (new ReflectionProperty(QueueMonitorProvider::class, 'supportsBatchTracking'))->setValue(null, null);
-
     $migration = include __DIR__.'/../../database/migrations/create_filament-jobs-monitor_table.php.stub';
     $migration->up();
     $migration = include __DIR__.'/../../database/migrations/add_batches_to_filament-jobs-monitor_table.php.stub';

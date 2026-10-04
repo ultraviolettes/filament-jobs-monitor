@@ -422,6 +422,11 @@ the worker remembers its id and the class the next step must have, and the conti
 The expectation is consumed on the first match, so an unrelated job dispatched from inside a chained
 job does not join the chain.
 
+The job Details modal then shows a **timeline** of the chain: one line per step with its status, the
+exception inline on the one that broke, and the steps that were never reached — read off the
+serialized chain the failed job still carries, since those steps left no row of their own. The Jobs
+table also gains a Chain filter, which the timeline links to for a chain longer than 50 steps.
+
 ### Slow job detection
 
 A job that used to take 2s and now takes 90s is invisible until it starts timing out. The plugin

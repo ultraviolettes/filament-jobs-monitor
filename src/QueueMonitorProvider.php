@@ -120,6 +120,10 @@ class QueueMonitorProvider extends ServiceProvider
             $attributes['tenant_id'] = $tenantId;
         }
 
+        if (self::supportsBatchTracking()) {
+            $attributes['batch_id'] = self::getBatchId($job);
+        }
+
         $monitor = resolve(QueueMonitor::class)::on(self::getConnection())->create($attributes);
 
         resolve(QueueMonitor::class)::on(self::getConnection())
@@ -222,6 +226,39 @@ class QueueMonitorProvider extends ServiceProvider
         } catch (\Throwable) {
             // Detection is best effort.
         }
+    }
+
+    /**
+     * The batch a job belongs to, as Laravel records it on every job dispatched
+     * inside `Bus::batch()`.
+     */
+    protected static function getBatchId(JobContract $job): ?string
+    {
+        $batchId = $job->payload()['data']['batchId'] ?? null;
+
+        return is_string($batchId) ? $batchId : null;
+    }
+
+    /**
+     * Whether the batch-tracking migration has been run. Memoized like the
+     * failure-tracking check, so long-running workers hit the schema once.
+     */
+    protected static ?bool $supportsBatchTracking = null;
+
+    protected static function supportsBatchTracking(): bool
+    {
+        if (self::$supportsBatchTracking !== null) {
+            return self::$supportsBatchTracking;
+        }
+
+        try {
+            self::$supportsBatchTracking = Schema::connection(config('filament-jobs-monitor.connection'))
+                ->hasColumn('queue_monitors', 'batch_id');
+        } catch (\Throwable) {
+            self::$supportsBatchTracking = false;
+        }
+
+        return self::$supportsBatchTracking;
     }
 
     /**

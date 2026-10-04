@@ -21,6 +21,7 @@ class FilamentJobsMonitorServiceProvider extends PackageServiceProvider
             ->hasMigrations([
                 'create_filament-jobs-monitor_table',
                 'add_failures_to_filament-jobs-monitor_table',
+                'add_batches_to_filament-jobs-monitor_table',
             ])
             ->hasCommand(PruneQueueMonitorCommand::class);
     }

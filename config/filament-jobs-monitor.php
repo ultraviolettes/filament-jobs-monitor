@@ -70,6 +70,29 @@ return [
      */
     'queues' => null,
 
+    'slow' => [
+        /**
+         * Flag runs that take unusually long, and dispatch JobMonitorSlow.
+         */
+        'enabled' => true,
+        /**
+         * Absolute limit, in seconds (null disables it).
+         */
+        'threshold_seconds' => 60,
+        /**
+         * Relative limit: a run slower than this multiple of its own class
+         * median is flagged, once the class has `min_samples` finished runs.
+         */
+        'anomaly_multiplier' => 2.0,
+        'min_samples' => 20,
+        /**
+         * Days of history the medians are computed over, and how long they are
+         * cached for (0 disables the cache).
+         */
+        'window_days' => 7,
+        'cache_ttl' => 300,
+    ],
+
     'queue_discovery' => [
         /**
          * Seconds the discovered list is cached for. 0 disables the cache.

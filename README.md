@@ -367,6 +367,41 @@ same way, since both end up behind `Gate`. With **Filament Shield**, generate a 
 Recommended once the abilities are granted: an ability nobody covered is then refused instead of
 allowed. Grant `viewAnyQueueMonitor` first, or the resource disappears from the panel.
 
+### Slow job detection
+
+A job that used to take 2s and now takes 90s is invisible until it starts timing out. The plugin
+flags a run as slow when it crosses the absolute threshold, or when it takes more than
+`anomaly_multiplier` times the median of its own job class — the latter only once that class has
+`min_samples` finished runs, so a class seen three times cannot flag itself.
+
+Flagged runs get a warning badge on the duration column with the reason in a tooltip, a `Slow`
+option appears on the status filter, and the **Top slow jobs** widget lists the slowest classes with
+their median, p95 and the trend against the previous window.
+
+```php
+// config/filament-jobs-monitor.php
+'slow' => [
+    'enabled' => true,
+    'threshold_seconds' => 60,   // null disables the absolute limit
+    'anomaly_multiplier' => 2.0,
+    'min_samples' => 20,
+    'window_days' => 7,
+    'cache_ttl' => 300,
+],
+```
+
+Medians and percentiles are computed in PHP from a single query over the window — SQLite and MySQL
+have no portable percentile function — so the cost does not grow with the number of job classes.
+
+Each flagged run dispatches `Croustibat\FilamentJobsMonitor\Events\JobMonitorSlow`, carrying the
+monitor, the reason (`threshold` or `anomaly`), the duration, the class median and the ratio:
+
+```php
+Event::listen(JobMonitorSlow::class, function (JobMonitorSlow $event) {
+    Log::warning("{$event->monitor->name} took {$event->duration}s ({$event->reason})");
+});
+```
+
 ### Sub-navigation layout
 
 The Job History / Pending / Failures sub-navigation sits on top by default, because the three pages

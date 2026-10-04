@@ -7,6 +7,7 @@ use Croustibat\FilamentJobsMonitor\Models\QueueJob;
 use Croustibat\FilamentJobsMonitor\Models\QueueMonitor;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Widgets\QueueStatsOverview;
+use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Widgets\SlowJobsOverview;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
@@ -24,6 +25,7 @@ class ListQueueMonitors extends ListRecords
     {
         return [
             QueueStatsOverview::class,
+            SlowJobsOverview::class,
         ];
     }
 

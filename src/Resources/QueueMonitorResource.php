@@ -15,6 +15,7 @@ use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Pages\ListPend
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Pages\ListQueueMonitors;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Widgets\FailureStatsOverview;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Widgets\QueueStatsOverview;
+use Croustibat\FilamentJobsMonitor\SlowJobs;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\DeleteBulkAction;
@@ -107,6 +108,10 @@ class QueueMonitorResource extends Resource
                     ->label(__('filament-jobs-monitor::translations.duration'))
                     ->state(fn (QueueMonitor $record): ?string => static::durationFor($record))
                     ->placeholder('—')
+                    ->badge(fn (QueueMonitor $record): bool => SlowJobs::isSlow($record))
+                    ->color(fn (QueueMonitor $record): string => SlowJobs::isSlow($record) ? 'warning' : 'gray')
+                    ->icon(fn (QueueMonitor $record): ?string => SlowJobs::isSlow($record) ? 'heroicon-m-exclamation-triangle' : null)
+                    ->tooltip(fn (QueueMonitor $record): ?string => static::slowTooltipFor($record))
                     // Sorted in SQL, on epoch seconds, so running jobs (no
                     // finished_at) do not have to be hydrated to be ordered.
                     ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderByRaw(
@@ -334,6 +339,7 @@ class QueueMonitorResource extends Resource
                         'running' => __('filament-jobs-monitor::translations.running'),
                         'succeeded' => __('filament-jobs-monitor::translations.succeeded'),
                         'failed' => __('filament-jobs-monitor::translations.failed'),
+                        'slow' => __('filament-jobs-monitor::translations.slow'),
                     ])
                     ->query(function (Builder $query, array $data) {
                         if ($data['value'] === 'succeeded') {
@@ -347,6 +353,13 @@ class QueueMonitorResource extends Resource
                         } elseif ($data['value'] === 'running') {
                             return $query
                                 ->whereNull('finished_at');
+                        } elseif ($data['value'] === 'slow') {
+                            // The absolute threshold only: the per-class medians
+                            // are computed in PHP and cannot be expressed here.
+                            return $query
+                                ->whereNotNull('finished_at')
+                                ->where('failed', 0)
+                                ->whereRaw(resolve(QueueMonitor::class)::elapsedSeconds().' >= ?', [SlowJobs::thresholdSeconds() ?? PHP_INT_MAX]);
                         }
                     }),
             ])
@@ -371,6 +384,29 @@ class QueueMonitorResource extends Resource
     public static function getNavigationLabel(): string
     {
         return Str::title(static::getPluralModelLabel());
+    }
+
+    /**
+     * Why a run is flagged as slow, for the column tooltip.
+     */
+    public static function slowTooltipFor(QueueMonitor $record): ?string
+    {
+        $inspection = SlowJobs::inspect($record);
+
+        if (! $inspection['slow']) {
+            return null;
+        }
+
+        if ($inspection['reason'] === 'anomaly') {
+            return __('filament-jobs-monitor::translations.slower_than_usual', [
+                'ratio' => $inspection['ratio'],
+                'median' => round((float) $inspection['median'], 1),
+            ]);
+        }
+
+        return __('filament-jobs-monitor::translations.over_slow_threshold', [
+            'seconds' => SlowJobs::thresholdSeconds(),
+        ]);
     }
 
     /**

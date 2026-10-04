@@ -98,15 +98,6 @@ class ListPendingJobs extends Page implements HasTable
 
     public function getSubNavigation(): array
     {
-        $items = [
-            ListQueueMonitors::class,
-            ListPendingJobs::class,
-        ];
-
-        if (config('filament-jobs-monitor.failures.enabled', true)) {
-            $items[] = ListFailures::class;
-        }
-
-        return $this->generateNavigationItems($items);
+        return $this->generateNavigationItems(QueueMonitorResource::subNavigationPages());
     }
 }

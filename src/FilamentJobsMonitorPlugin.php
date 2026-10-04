@@ -308,6 +308,16 @@ class FilamentJobsMonitorPlugin implements Plugin
     }
 
     /**
+     * Enable the Batches page.
+     */
+    public function enableBatchesPage(bool $status = true): static
+    {
+        config()->set('filament-jobs-monitor.batches.enabled', $status);
+
+        return $this;
+    }
+
+    /**
      * Get the authorization callback configured for an ability, if any.
      */
     public function getAuthorization(string $ability): bool|Closure|null

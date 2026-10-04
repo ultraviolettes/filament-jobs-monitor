@@ -10,6 +10,7 @@ use Croustibat\FilamentJobsMonitor\Jobs\RetryFailedJobJob;
 use Croustibat\FilamentJobsMonitor\Models\FailedJob;
 use Croustibat\FilamentJobsMonitor\Models\QueueJob;
 use Croustibat\FilamentJobsMonitor\Models\QueueMonitor;
+use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Pages\ListBatches;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Pages\ListFailures;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Pages\ListPendingJobs;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Pages\ListQueueMonitors;
@@ -117,6 +118,15 @@ class QueueMonitorResource extends Resource
                     ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderByRaw(
                         resolve(QueueMonitor::class)::elapsedSeconds().' '.($direction === 'desc' ? 'desc' : 'asc')
                     )),
+                TextColumn::make('batch_id')
+                    ->label(__('filament-jobs-monitor::translations.batch'))
+                    ->formatStateUsing(fn (?string $state): ?string => $state === null ? null : Str::limit($state, 8, ''))
+                    ->url(fn (QueueMonitor $record): ?string => $record->batch_id !== null && ListBatches::isEnabled()
+                        ? ListBatches::getUrl()
+                        : null)
+                    ->placeholder('—')
+                    ->visible(fn (): bool => static::tracksBatches())
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('attempt')
                     ->label(__('filament-jobs-monitor::translations.attempts'))
                     ->sortable()
@@ -310,6 +320,11 @@ class QueueMonitorResource extends Resource
                 SelectFilter::make('queue')
                     ->label(__('filament-jobs-monitor::translations.queue'))
                     ->options(fn (): array => resolve(QueueMonitor::class)::distinctQueues()),
+                SelectFilter::make('batch_id')
+                    ->label(__('filament-jobs-monitor::translations.batch'))
+                    ->visible(fn (): bool => static::tracksBatches())
+                    ->searchable()
+                    ->options(fn (): array => static::batchFilterOptions()),
                 Filter::make('started_at')
                     ->schema([
                         DatePicker::make('from')
@@ -384,6 +399,49 @@ class QueueMonitorResource extends Resource
     public static function getNavigationLabel(): string
     {
         return Str::title(static::getPluralModelLabel());
+    }
+
+    /**
+     * Whether the batches migration has been run. Memoized: the table renders
+     * this per column, not per row.
+     */
+    protected static ?bool $tracksBatches = null;
+
+    public static function tracksBatches(): bool
+    {
+        if (static::$tracksBatches !== null) {
+            return static::$tracksBatches;
+        }
+
+        try {
+            static::$tracksBatches = \Illuminate\Support\Facades\Schema::connection(config('filament-jobs-monitor.connection'))
+                ->hasColumn(resolve(QueueMonitor::class)->getTable(), 'batch_id');
+        } catch (\Throwable) {
+            static::$tracksBatches = false;
+        }
+
+        return static::$tracksBatches;
+    }
+
+    /**
+     * The batches jobs were actually monitored in, newest first.
+     *
+     * @return array<string, string>
+     */
+    public static function batchFilterOptions(): array
+    {
+        if (! static::tracksBatches()) {
+            return [];
+        }
+
+        return resolve(QueueMonitor::class)::query()
+            ->whereNotNull('batch_id')
+            ->distinct()
+            ->orderByDesc('started_at')
+            ->limit(50)
+            ->pluck('batch_id', 'batch_id')
+            ->map(fn (string $id): string => Str::limit($id, 8, ''))
+            ->all();
     }
 
     /**
@@ -544,6 +602,30 @@ class QueueMonitorResource extends Resource
         return FilamentJobsMonitorPlugin::get()->getNavigationIcon();
     }
 
+    /**
+     * The pages of the sub-navigation, in order, for the ones that are enabled.
+     *
+     * @return array<int, class-string>
+     */
+    public static function subNavigationPages(): array
+    {
+        $pages = [ListQueueMonitors::class];
+
+        if (resolve(QueueJob::class)::isSupported()) {
+            $pages[] = ListPendingJobs::class;
+        }
+
+        if (config('filament-jobs-monitor.failures.enabled', true)) {
+            $pages[] = ListFailures::class;
+        }
+
+        if (ListBatches::isEnabled()) {
+            $pages[] = ListBatches::class;
+        }
+
+        return $pages;
+    }
+
     public static function getPages(): array
     {
         $pages = [
@@ -556,6 +638,10 @@ class QueueMonitorResource extends Resource
 
         if (config('filament-jobs-monitor.failures.enabled', true)) {
             $pages['failures'] = ListFailures::route('/failures');
+        }
+
+        if (ListBatches::isEnabled()) {
+            $pages['batches'] = ListBatches::route('/batches');
         }
 
         return $pages;

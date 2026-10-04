@@ -5,7 +5,12 @@
  * so it can never outrank the host application's own utilities (see #145).
  */
 @import 'tailwindcss/theme.css' theme(reference);
-@import 'tailwindcss/utilities.css';
+/*
+ * `source(none)` disables automatic source detection: Tailwind 4 would otherwise
+ * scan the whole repository, including this build's own output under
+ * `resources/dist/`, and each build would then feed on the previous one.
+ */
+@import 'tailwindcss/utilities.css' source(none);
 
 @source '../views/**/*.blade.php';
 @source '../../src/**/*.php';

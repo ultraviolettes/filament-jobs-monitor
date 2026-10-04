@@ -2,6 +2,43 @@
 
 All notable changes to `filament-jobs-monitor` will be documented in this file.
 
+## 5.0.0 - 2026-10-04
+
+v5 targets Filament 5 only, puts every destructive action behind an ability, and fills the two
+blind spots of the dashboard: the Details modal, and how long jobs take. See `UPGRADE.md` for the
+v4 → v5 steps; `4.x` keeps receiving fixes on its own branch.
+
+### Breaking
+
+- **Filament 5, Laravel 12 or 13, PHP 8.3** are now required. Filament 4 and Laravel 11 users stay on `^4.0`, maintained on the [`4.x`](https://github.com/ultraviolettes/filament-jobs-monitor/tree/4.x) branch. Laravel 10 was advertised in `4.x` but could never be installed: every Filament 4 and 5 release requires Laravel 11.28+. (#170)
+- **The sub-navigation sits on top by default**; `->subNavigationPosition(SubNavigationPosition::Start)` restores the side column. These three pages are wide tables. (#174)
+- **The `queues` config key defaults to `null`**, which discovers the queues instead of listing them. An explicit array keeps working exactly as before, so a published config is unaffected. (#178)
+
+### Added
+
+- **Authorization**: six abilities — view, retry, delete, clear logs, delete a pending job, resolve a failure — each resolved through the plugin's `authorize*()` methods, a policy on the `QueueMonitor` model, a gate of the same name, then the `authorization.fallback` config key. Denied actions are hidden rather than failing on click, and a denied *view* closes the routes instead of only hiding the navigation entry. `fallback` is `true` by default, so nothing changes until the abilities are granted and it is set to `false`. (#141, #173, #175)
+- **Job Details modal**, now at the level of the Failures slide-over: metadata (status, queue, attempts, duration, started, finished, job id, progress), stack trace with the app/all/raw toggle, payload tree, a link to the failure group and a Retry button. The stack-trace viewer is a partial shared with the Failures page. (#137, #176)
+- **Duration column**, sorted in SQL on epoch seconds, plus `attempt` and `finished_at` columns hidden by default, a searchable job name, a queue filter and a `started_at` range filter. (#138, #177)
+- **Queue discovery**: queues are read from `queue_monitors`, the `jobs` and `failed_jobs` tables, the configured connections and Horizon's supervisors, cached for `queue_discovery.cache_ttl`. Observed queues are what makes Redis and SQS usable here, since neither can enumerate its queues. (#140, #178)
+- **Slow job detection**: a run is flagged over the absolute threshold or over `anomaly_multiplier` × its class median (once the class has `min_samples` runs), with a badge and tooltip on the duration column, a `Slow` filter option, a **Top slow jobs** widget (runs, median, p95, trend) and a `JobMonitorSlow` event. Medians and percentiles are computed in PHP from a single query. (#142, #179)
+- **`->subNavigationPosition()`** on the plugin, and the config key now accepts the enum or its string value. (#143, #174)
+- **Configurable table polling** for the Job History and Pending pages, through `resources.polling_interval`. (#163, #166)
+- **PHPStan**: Larastan 3 is installed and actually runs, in CI and through `composer analyse`; models document their columns. `composer test` and `composer lint` scripts added. (#158)
+
+### Changed
+
+- **The stylesheet follows the panel's colours**: with the Tailwind 4 migration, `.text-primary-600` compiles to `color:var(--primary-600)` instead of a hardcoded amber, in light and dark mode. (#152, #171)
+- **The asset build is reproducible**: `npm run build` no longer fetches Filament's stylesheet from GitHub at build time, and a CI job fails if the committed build is out of date. (#168, #169)
+- **CI** covers Laravel 12 and 13 with a `prefer-lowest` job, behind a single `tests` status check. Every GitHub Action is pinned to a commit SHA, and Dependabot covers npm with an update cooldown. (#150, #157, #167, #170)
+- Community health files refreshed: private vulnerability reporting, a Code of Conduct, a pull request template and a CONTRIBUTING guide matching the actual toolchain. (#160)
+
+### Fixed
+
+- **`resources.enabled` is honoured again** for the navigation: a strict comparison made the config fallback unreachable, so the key was ignored. (#159)
+- **`SubNavigationPosition::Sidebar`** was referenced in the config comment, the README and `UPGRADE.md`; it does not exist in Filament 5 (the cases are `Start`, `End` and `Top`), so following that comment threw. (#174)
+- **The `vendor:publish` tags** are covered by a test, and the dead `QueueMonitor` facade alias was removed. (#162, #165)
+- **Localised resource labels**: a dedicated `plural_model_label` key, and the Job History sub-navigation no longer falls back to the class name. ([@saythe0](https://github.com/saythe0) — #149)
+
 ## 4.6.3 - 2026-10-01
 
 ### Fixed

@@ -34,6 +34,8 @@ return [
     'finished_at' => 'Zakończono',
     'job_id' => 'ID zadania',
     'view_failure_group' => 'Zobacz grupę błędów',
+    'from' => 'Od',
+    'until' => 'Do',
     'details' => 'Szczegóły',
     'attempts' => 'Próby',
     'exception' => 'Wyjątek',

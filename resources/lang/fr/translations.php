@@ -34,6 +34,8 @@ return [
     'finished_at' => 'Terminé',
     'job_id' => 'ID du job',
     'view_failure_group' => 'Voir le groupe d\'échecs',
+    'from' => 'Du',
+    'until' => 'Au',
     'details' => 'Détails',
     'attempts' => 'Tentatives',
     'exception' => 'Exception',

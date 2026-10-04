@@ -367,6 +367,21 @@ same way, since both end up behind `Gate`. With **Filament Shield**, generate a 
 Recommended once the abilities are granted: an ability nobody covered is then refused instead of
 allowed. Grant `viewAnyQueueMonitor` first, or the resource disappears from the panel.
 
+### Batches and chains
+
+Jobs dispatched inside `Bus::batch()` record their batch, so a monitor can be tied back to it:
+
+```php
+$monitor->batch();  // ?Illuminate\Bus\Batch, via Bus::findBatch()
+$monitor->chain();  // Collection<QueueMonitor>, the steps of the chain in run order
+```
+
+This needs the `add_batches_to_filament-jobs-monitor_table` migration. Without it the package keeps
+working exactly as before: the schema check is memoized, so a long-running worker pays for it once.
+
+`chain_id` is stored and queried by `chain()`, but nothing populates it yet — Laravel has no chain
+identifier, and propagating one through a chain needs a design decision (see #181).
+
 ### Slow job detection
 
 A job that used to take 2s and now takes 90s is invisible until it starts timing out. The plugin

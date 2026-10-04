@@ -4,6 +4,7 @@ namespace Croustibat\FilamentJobsMonitor\Models;
 
 use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
 use Filament\Facades\Filament;
+use Illuminate\Bus\Batch;
 use Illuminate\Contracts\Queue\Job as JobContract;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -12,6 +13,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -29,6 +32,8 @@ use Illuminate\Support\Facades\Hash;
  * @property string|null $exception_class
  * @property string|null $exception
  * @property string|null $failure_signature
+ * @property string|null $batch_id
+ * @property string|null $chain_id
  * @property string|null $tenant_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -57,6 +62,8 @@ class QueueMonitor extends Model
         'exception_class',
         'exception',
         'failure_signature',
+        'batch_id',
+        'chain_id',
         'tenant_id',
     ];
 
@@ -127,6 +134,31 @@ class QueueMonitor extends Model
      * Methods
      *--------------------------------------------------------------------------
      */
+
+    /**
+     * The batch this job belongs to, if the batch still exists.
+     */
+    public function batch(): ?Batch
+    {
+        return blank($this->batch_id) ? null : Bus::findBatch($this->batch_id);
+    }
+
+    /**
+     * Every monitored step of the chain this job belongs to, in run order.
+     *
+     * @return Collection<int, static>
+     */
+    public function chain(): Collection
+    {
+        if (blank($this->chain_id)) {
+            return new Collection;
+        }
+
+        return static::query()
+            ->where('chain_id', $this->chain_id)
+            ->orderBy('started_at')
+            ->get();
+    }
 
     /**
      * A datetime column as epoch seconds, in the dialect of the current driver.

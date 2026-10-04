@@ -1,5 +1,26 @@
 # Upgrade Guide
 
+## Upgrading from v5.0 to v5.1
+
+Nothing is required: batches and chains are opt-in and the package behaves exactly as in 5.0 until
+you turn them on.
+
+To use them, publish and run the new migration, then enable what you need:
+
+```bash
+php artisan vendor:publish --tag="filament-jobs-monitor-migrations"
+php artisan migrate
+```
+
+```php
+FilamentJobsMonitorPlugin::make()
+    ->enableBatchesPage()      // Batches page, database batch driver only
+    ->enableChainsTracking()   // one chain_id per chain; unserializes each dispatched command
+```
+
+Laravel only stores batches with the `database` batch driver; on any other driver the Batches page
+stays unregistered rather than listing an empty table.
+
 ## Upgrading from v4.x to v5.x
 
 v5 drops the compatibility layers v4 carried. Nothing in the plugin's own API changed in this step;

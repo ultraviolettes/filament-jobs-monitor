@@ -2,6 +2,23 @@
 
 All notable changes to `filament-jobs-monitor` will be documented in this file.
 
+## 5.1.0 - 2026-10-04
+
+Batches and chains become first-class (#133). Everything here is additive and opt-in: a package
+left as is behaves exactly like 5.0.
+
+### Added
+
+- **Batch and chain tracking**: a publishable migration adds `batch_id` and `chain_id` to `queue_monitors`. `batch_id` is read from the payload Laravel writes for every job dispatched inside `Bus::batch()`, and `QueueMonitor::batch()` / `::chain()` expose the batch and the steps of a chain. The schema check is memoized, so a package whose migration has not been run behaves exactly as before. (#134, #182)
+- **Batches page**, opt-in through `->enableBatchesPage()`: name, status, progress, failed and pending counts, started and finished, a status filter, and row actions to view the batch's monitored jobs, retry it (`queue:retry-batch`) or cancel it — each behind the matching ability. A header action prunes finished batches. The page reads `job_batches` instead of duplicating its state, and only registers when batches are stored in the database. (#135, #183)
+- **Chain tracking**, opt-in through `->enableChainsTracking()`: every step of a chain gets the same `chain_id`. Laravel has none, and it cannot be derived afterwards, so the id is written into the payload when the chain starts and carried forward — the worker remembers the running job's id and the class its next step must have, and that expectation is consumed on the first match, so a job dispatched from inside a chained job does not join the chain. (#181, #184)
+- **Chain timeline** in the job Details modal: one line per step with its state, the exception inline on the step that broke, and the steps that were never reached — read off the serialized chain the failed job still carries, since they left no row of their own. Chains past 50 steps link to the Jobs table. (#136, #185)
+- **Batch and Chain filters** on the Jobs table, plus a Batch column linking to the Batches page. All three appear only once the new migration has been run.
+
+### Fixed
+
+- **A job class removed from the codebase** unserialized to an incomplete object, which threw on any property access; chain reading now treats it as untrackable. (#185)
+
 ## 5.0.0 - 2026-10-04
 
 v5 targets Filament 5 only, puts every destructive action behind an ability, and fills the two

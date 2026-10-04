@@ -290,8 +290,13 @@ Then you can call your Job with the following code:
 
 ## Authorization
 
-Since v5 the plugin denies its abilities by default: reaching the panel is no longer enough to read
-job payloads — which routinely contain customer data — or to retry, delete and truncate.
+v5 puts every destructive action, and the job payloads themselves, behind an ability. Payloads
+routinely carry customer data, and "Clear logs" truncates the monitor table, so a panel with more
+than one role should not hand them to everyone who can open it.
+
+**Nothing changes when upgrading**: an ability nobody covered is granted, as in v4. Flip
+`authorization.fallback` to `false` once the abilities below are granted, and the plugin then
+refuses anything the application has not allowed.
 
 | Ability | Gate name | Policy method | Covers |
 | --- | --- | --- | --- |
@@ -307,7 +312,7 @@ Each ability is resolved in this order, first match wins:
 1. the closure or boolean set on the plugin;
 2. a policy registered for the `QueueMonitor` model, when it implements the method;
 3. a gate of the same name;
-4. the `authorization.fallback` config key (`false`).
+4. the `authorization.fallback` config key (`true` by default).
 
 Denied abilities hide their action instead of failing on click, and a denied *View* makes the routes
 return 403 rather than only hiding the navigation entry.
@@ -348,16 +353,17 @@ Plain gates (`Gate::define('clearQueueMonitorLogs', ...)`) and `spatie/laravel-p
 same way, since both end up behind `Gate`. With **Filament Shield**, generate a policy for
 `QueueMonitor` and add the abilities above to it.
 
-### Keeping the old behaviour
+### Denying anything that is not granted
 
 ```php
 // config/filament-jobs-monitor.php
 'authorization' => [
-    'fallback' => true,
+    'fallback' => false,
 ],
 ```
 
-Everyone who can reach the panel can then do everything, as in v4.
+Recommended once the abilities are granted: an ability nobody covered is then refused instead of
+allowed. Grant `viewAnyQueueMonitor` first, or the resource disappears from the panel.
 
 ### Sub-navigation layout
 

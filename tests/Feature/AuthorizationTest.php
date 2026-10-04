@@ -30,18 +30,27 @@ const ABILITIES = [
     Authorization::RESOLVE_FAILURE,
 ];
 
-it('denies every ability when nothing is configured', function (string $ability) {
-    expect(Authorization::allows($ability))->toBeFalse()
-        ->and(Authorization::denies($ability))->toBeTrue();
+it('grants every ability when nothing is configured, as before v5', function (string $ability) {
+    expect(Authorization::allows($ability))->toBeTrue()
+        ->and(Authorization::denies($ability))->toBeFalse();
 })->with(ABILITIES);
 
-it('grants every ability when the fallback is turned back on', function (string $ability) {
-    config()->set('filament-jobs-monitor.authorization.fallback', true);
+it('grants every ability when the config key is missing entirely', function (string $ability) {
+    // What an application upgrading from v4 has: a published config without the key.
+    config()->set('filament-jobs-monitor.authorization', []);
 
     expect(Authorization::allows($ability))->toBeTrue();
 })->with(ABILITIES);
 
+it('denies every ability once the fallback is closed', function (string $ability) {
+    config()->set('filament-jobs-monitor.authorization.fallback', false);
+
+    expect(Authorization::allows($ability))->toBeFalse()
+        ->and(Authorization::denies($ability))->toBeTrue();
+})->with(ABILITIES);
+
 it('reads a gate of the same name', function () {
+    config()->set('filament-jobs-monitor.authorization.fallback', false);
     Gate::define(Authorization::CLEAR_LOGS, fn (?Authenticatable $user) => true);
 
     expect(Authorization::allows(Authorization::CLEAR_LOGS))->toBeTrue()
@@ -49,7 +58,6 @@ it('reads a gate of the same name', function () {
 });
 
 it('lets a gate deny an ability the fallback would have granted', function () {
-    config()->set('filament-jobs-monitor.authorization.fallback', true);
     Gate::define(Authorization::CLEAR_LOGS, fn (?Authenticatable $user) => false);
 
     expect(Authorization::allows(Authorization::CLEAR_LOGS))->toBeFalse()
@@ -57,13 +65,13 @@ it('lets a gate deny an ability the fallback would have granted', function () {
 });
 
 it('reads a policy registered on the monitor model', function () {
+    config()->set('filament-jobs-monitor.authorization.fallback', false);
     Gate::policy(QueueMonitor::class, ViewOnlyQueueMonitorPolicy::class);
 
     expect(Authorization::allows(Authorization::VIEW_ANY))->toBeTrue();
 });
 
 it('falls through for an ability the policy does not implement', function () {
-    config()->set('filament-jobs-monitor.authorization.fallback', true);
     Gate::policy(QueueMonitor::class, ViewOnlyQueueMonitorPolicy::class);
 
     // `clearLogs` is absent from the policy, so the fallback decides.
@@ -83,6 +91,8 @@ it('keeps the plugin callbacks, which take precedence over everything else', fun
 });
 
 it('hides the resource and its pages from unauthorized users', function () {
+    config()->set('filament-jobs-monitor.authorization.fallback', false);
+
     expect(QueueMonitorResource::canViewAny())->toBeFalse()
         ->and(QueueMonitorResource::canDeleteAny())->toBeFalse()
         ->and(ListQueueMonitors::canAccess())->toBeFalse()
@@ -90,6 +100,7 @@ it('hides the resource and its pages from unauthorized users', function () {
 });
 
 it('opens the resource and its pages once the ability is granted', function () {
+    config()->set('filament-jobs-monitor.authorization.fallback', false);
     Gate::define(Authorization::VIEW_ANY, fn (?Authenticatable $user) => true);
 
     expect(QueueMonitorResource::canViewAny())->toBeTrue()
@@ -100,6 +111,7 @@ it('opens the resource and its pages once the ability is granted', function () {
 
 it('keeps the Failures page closed when the feature is disabled, even when authorized', function () {
     config()->set('filament-jobs-monitor.failures.enabled', false);
+    config()->set('filament-jobs-monitor.authorization.fallback', false);
     Gate::define(Authorization::VIEW_ANY, fn (?Authenticatable $user) => true);
 
     expect(ListFailures::canAccess())->toBeFalse();

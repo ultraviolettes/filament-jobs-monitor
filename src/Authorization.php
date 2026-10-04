@@ -15,8 +15,8 @@ use Throwable;
  *   1. the closure configured on the plugin (`authorize()`, `authorizeRetry()`, …)
  *   2. a policy registered for the `QueueMonitor` model, when it implements the ability
  *   3. a gate of the same name
- *   4. the `authorization.fallback` config key — `false` since v5, so an ability
- *      nobody configured is denied rather than granted
+ *   4. the `authorization.fallback` config key — `true` by default, so upgrading
+ *      changes nothing until the application opts into the stricter behaviour
  */
 class Authorization
 {
@@ -68,7 +68,7 @@ class Authorization
                 : Gate::allows($ability);
         }
 
-        return (bool) config('filament-jobs-monitor.authorization.fallback', false);
+        return (bool) config('filament-jobs-monitor.authorization.fallback', true);
     }
 
     public static function denies(string $ability, ?Model $record = null): bool

@@ -2,6 +2,7 @@
 
 namespace Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Pages;
 
+use Croustibat\FilamentJobsMonitor\Authorization;
 use Croustibat\FilamentJobsMonitor\Models\QueueJob;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource;
 use Filament\Actions\DeleteAction;
@@ -77,10 +78,12 @@ class ListPendingJobs extends Page implements HasTable
             ->actions([
                 DeleteAction::make()
                     ->label(__('filament-jobs-monitor::translations.delete'))
+                    ->visible(fn (): bool => Authorization::allows(Authorization::DELETE_PENDING_JOB))
                     ->requiresConfirmation(),
             ])
             ->bulkActions([
-                DeleteBulkAction::make(),
+                DeleteBulkAction::make()
+                    ->visible(fn (): bool => Authorization::allows(Authorization::DELETE_PENDING_JOB)),
             ])
             ->poll(config('filament-jobs-monitor.resources.polling_interval'))
             ->emptyStateHeading(__('filament-jobs-monitor::translations.no_pending_jobs'))
@@ -89,7 +92,8 @@ class ListPendingJobs extends Page implements HasTable
 
     public static function canAccess(array $parameters = []): bool
     {
-        return resolve(QueueJob::class)::isSupported();
+        return resolve(QueueJob::class)::isSupported()
+            && Authorization::allows(Authorization::VIEW_ANY);
     }
 
     public function getSubNavigation(): array

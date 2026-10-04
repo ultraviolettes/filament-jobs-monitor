@@ -2,6 +2,7 @@
 
 namespace Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Pages;
 
+use Croustibat\FilamentJobsMonitor\Authorization;
 use Croustibat\FilamentJobsMonitor\Models\FailedJob;
 use Croustibat\FilamentJobsMonitor\Models\FailureGroup;
 use Croustibat\FilamentJobsMonitor\Models\QueueJob;
@@ -49,7 +50,8 @@ class ListFailures extends Page implements HasTable
 
     public static function canAccess(array $parameters = []): bool
     {
-        return (bool) config('filament-jobs-monitor.failures.enabled', true);
+        return (bool) config('filament-jobs-monitor.failures.enabled', true)
+            && Authorization::allows(Authorization::VIEW_ANY);
     }
 
     public function getHeaderWidgets(): array
@@ -63,6 +65,7 @@ class ListFailures extends Page implements HasTable
     {
         return [
             Action::make('retry_all_failed')
+                ->visible(fn (): bool => Authorization::allows(Authorization::RETRY))
                 ->label(__('filament-jobs-monitor::translations.retry_all_failed'))
                 ->icon('heroicon-o-arrow-path')
                 ->color('primary')
@@ -178,6 +181,7 @@ class ListFailures extends Page implements HasTable
             ])
             ->bulkActions([
                 BulkAction::make('mark_resolved')
+                    ->visible(fn (): bool => Authorization::allows(Authorization::RESOLVE_FAILURE))
                     ->label(__('filament-jobs-monitor::translations.mark_resolved'))
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
@@ -226,7 +230,7 @@ class ListFailures extends Page implements HasTable
                     ->label(__('filament-jobs-monitor::translations.mark_resolved'))
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->visible(fn (FailureGroup $record): bool => ! $record->isResolved())
+                    ->visible(fn (FailureGroup $record): bool => ! $record->isResolved() && Authorization::allows(Authorization::RESOLVE_FAILURE, $record))
                     ->action(function (FailureGroup $record): void {
                         $record->markResolved();
 
@@ -248,6 +252,7 @@ class ListFailures extends Page implements HasTable
     protected function getRetryGroupAction(): Action
     {
         return Action::make('retry_group')
+            ->visible(fn (FailureGroup $record): bool => Authorization::allows(Authorization::RETRY))
             ->label(__('filament-jobs-monitor::translations.retry'))
             ->icon('heroicon-o-arrow-path')
             ->color('primary')
@@ -279,7 +284,7 @@ class ListFailures extends Page implements HasTable
             ->label(__('filament-jobs-monitor::translations.reopen'))
             ->icon('heroicon-o-arrow-uturn-left')
             ->color('gray')
-            ->visible(fn (FailureGroup $record): bool => $record->isResolved())
+            ->visible(fn (FailureGroup $record): bool => $record->isResolved() && Authorization::allows(Authorization::RESOLVE_FAILURE, $record))
             ->action(function (FailureGroup $record): void {
                 $record->reopen();
 

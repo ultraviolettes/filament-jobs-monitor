@@ -19,7 +19,32 @@ If you are still on Filament 4 or Laravel 11, stay on `^4.0`: the `4.x` branch k
 composer require croustibat/filament-jobs-monitor:^5.0
 ```
 
-### Step 2: Republish the assets
+### Step 2: Grant the abilities
+
+**This is the breaking change of v5.** The plugin used to let anyone who could reach the panel read
+job payloads, retry, delete and truncate the monitor table. Those abilities are now denied unless a
+policy, a gate or the plugin grants them, so after upgrading the resource disappears until you do.
+
+The quickest way back to a working panel:
+
+```php
+FilamentJobsMonitorPlugin::make()
+    ->authorize(fn () => auth()->user()?->hasRole('admin'))
+```
+
+or, to postpone the decision and keep the v4 behaviour:
+
+```php
+// config/filament-jobs-monitor.php
+'authorization' => [
+    'fallback' => true,
+],
+```
+
+See the Authorization section of the README for the full list of abilities, their gate names and
+their policy methods.
+
+### Step 3: Republish the assets
 
 ```bash
 php artisan filament:assets

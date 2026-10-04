@@ -54,6 +54,13 @@ class FilamentJobsMonitorPlugin implements Plugin
     protected ?bool $navigationCountBadge = null;
 
     /**
+     * The authorization callbacks, keyed by ability.
+     *
+     * @var array<string, bool|Closure>
+     */
+    protected array $authorization = [];
+
+    /**
      * The pruning status.
      */
     protected ?bool $pruning = null;
@@ -260,6 +267,69 @@ class FilamentJobsMonitorPlugin implements Plugin
     public function enableNavigation(bool|Closure $callback = true): static
     {
         $this->navigation = $callback;
+
+        return $this;
+    }
+
+    /**
+     * Get the authorization callback configured for an ability, if any.
+     */
+    public function getAuthorization(string $ability): bool|Closure|null
+    {
+        return $this->authorization[$ability] ?? null;
+    }
+
+    /**
+     * Authorize access to the resource and its pages.
+     */
+    public function authorize(bool|Closure $callback = true): static
+    {
+        return $this->authorizeAbility(Authorization::VIEW_ANY, $callback);
+    }
+
+    /**
+     * Authorize retrying failed jobs, one by one, in bulk or all at once.
+     */
+    public function authorizeRetry(bool|Closure $callback = true): static
+    {
+        return $this->authorizeAbility(Authorization::RETRY, $callback);
+    }
+
+    /**
+     * Authorize deleting monitor records.
+     */
+    public function authorizeDelete(bool|Closure $callback = true): static
+    {
+        return $this->authorizeAbility(Authorization::DELETE, $callback);
+    }
+
+    /**
+     * Authorize the "Clear logs" action, which truncates the monitor table.
+     */
+    public function authorizeClearLogs(bool|Closure $callback = true): static
+    {
+        return $this->authorizeAbility(Authorization::CLEAR_LOGS, $callback);
+    }
+
+    /**
+     * Authorize deleting queued jobs from the Pending page.
+     */
+    public function authorizeDeletePendingJob(bool|Closure $callback = true): static
+    {
+        return $this->authorizeAbility(Authorization::DELETE_PENDING_JOB, $callback);
+    }
+
+    /**
+     * Authorize resolving and reopening failure groups.
+     */
+    public function authorizeResolveFailure(bool|Closure $callback = true): static
+    {
+        return $this->authorizeAbility(Authorization::RESOLVE_FAILURE, $callback);
+    }
+
+    protected function authorizeAbility(string $ability, bool|Closure $callback): static
+    {
+        $this->authorization[$ability] = $callback;
 
         return $this;
     }

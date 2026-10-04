@@ -2,6 +2,7 @@
 
 namespace Croustibat\FilamentJobsMonitor\Resources;
 
+use Croustibat\FilamentJobsMonitor\Authorization;
 use Croustibat\FilamentJobsMonitor\Columns\ProgressColumn;
 use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
 use Croustibat\FilamentJobsMonitor\Jobs\RetryFailedJobJob;
@@ -30,6 +31,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 use UnitEnum;
@@ -112,7 +114,7 @@ class QueueMonitorResource extends Resource
                             ->minValue(0)
                             ->suffix(__('filament-jobs-monitor::translations.minutes')),
                     ])
-                    ->visible(fn ($record): bool => $record->hasFailed())
+                    ->visible(fn ($record): bool => $record->hasFailed() && Authorization::allows(Authorization::RETRY, $record))
                     ->action(function ($record, array $data): void {
                         $failedJob = resolve(FailedJob::class)::where('uuid', $record->job_id)->first();
 
@@ -158,6 +160,7 @@ class QueueMonitorResource extends Resource
             ])
             ->bulkActions([
                 BulkAction::make('retry')
+                    ->visible(fn (): bool => Authorization::allows(Authorization::RETRY))
                     ->label(__('filament-jobs-monitor::translations.retry'))
                     ->icon('heroicon-o-arrow-path')
                     ->color('warning')
@@ -227,7 +230,8 @@ class QueueMonitorResource extends Resource
                                 ->send();
                         }
                     }),
-                DeleteBulkAction::make(),
+                DeleteBulkAction::make()
+                    ->visible(fn (): bool => Authorization::allows(Authorization::DELETE)),
             ])
             ->headerActions([
                 Action::make('retry_all_failed')
@@ -243,7 +247,7 @@ class QueueMonitorResource extends Resource
                             ->minValue(0)
                             ->suffix(__('filament-jobs-monitor::translations.minutes')),
                     ])
-                    ->visible(fn (): bool => resolve(FailedJob::class)::count() > 0)
+                    ->visible(fn (): bool => resolve(FailedJob::class)::count() > 0 && Authorization::allows(Authorization::RETRY))
                     ->action(function (array $data): void {
                         $failedJobsCount = resolve(FailedJob::class)::count();
 
@@ -279,6 +283,7 @@ class QueueMonitorResource extends Resource
                     }),
 
                 Action::make('clearLogs')
+                    ->visible(fn (): bool => Authorization::allows(Authorization::CLEAR_LOGS))
                     ->label(__('filament-jobs-monitor::translations.clear_logs'))
                     ->icon('heroicon-o-trash')
                     ->color('danger')
@@ -339,6 +344,21 @@ class QueueMonitorResource extends Resource
     public static function getNavigationLabel(): string
     {
         return Str::title(static::getPluralModelLabel());
+    }
+
+    public static function canViewAny(): bool
+    {
+        return Authorization::allows(Authorization::VIEW_ANY);
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return Authorization::allows(Authorization::DELETE, $record);
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return Authorization::allows(Authorization::DELETE);
     }
 
     public static function getCluster(): ?string

@@ -38,13 +38,14 @@ it('publishes the config file shipped in the package to the application config p
         ->and(array_values($paths))->toBe([config_path('filament-jobs-monitor.php')]);
 });
 
-it('publishes both migrations', function () {
+it('publishes every migration', function () {
     $paths = publishGroup('filament-jobs-monitor-migrations');
 
     $published = array_values(array_map('basename', $paths));
 
-    expect($published)->toHaveCount(2)
+    expect($published)->toHaveCount(3)
         ->and(implode(' ', $published))
         ->toContain('create_filament-jobs-monitor_table')
-        ->toContain('add_failures_to_filament-jobs-monitor_table');
+        ->toContain('add_failures_to_filament-jobs-monitor_table')
+        ->toContain('add_batches_to_filament-jobs-monitor_table');
 });

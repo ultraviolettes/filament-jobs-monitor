@@ -26,6 +26,7 @@ use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Resource;
 use Filament\Resources\Resource\Concerns\HasNavigation;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -115,47 +116,25 @@ class QueueMonitorResource extends Resource
                             ->suffix(__('filament-jobs-monitor::translations.minutes')),
                     ])
                     ->visible(fn ($record): bool => $record->hasFailed() && Authorization::allows(Authorization::RETRY, $record))
-                    ->action(function ($record, array $data): void {
-                        $failedJob = resolve(FailedJob::class)::where('uuid', $record->job_id)->first();
-
-                        if (! $failedJob) {
-                            Notification::make()
-                                ->title(__('filament-jobs-monitor::translations.retry_failed'))
-                                ->body(__('filament-jobs-monitor::translations.retry_failed_description'))
-                                ->danger()
-                                ->send();
-
-                            return;
-                        }
-
-                        $delay = (int) ($data['delay'] ?? 0);
-
-                        if ($delay > 0) {
-                            RetryFailedJobJob::dispatch([$failedJob->uuid])->delay(now()->addMinutes($delay));
-
-                            Notification::make()
-                                ->title(__('filament-jobs-monitor::translations.retry_scheduled'))
-                                ->body(__('filament-jobs-monitor::translations.retry_scheduled_description', ['minutes' => $delay]))
-                                ->success()
-                                ->send();
-                        } else {
-                            Artisan::call('queue:retry', ['id' => [$failedJob->uuid]]);
-
-                            Notification::make()
-                                ->title(__('filament-jobs-monitor::translations.retry_success'))
-                                ->body(__('filament-jobs-monitor::translations.retry_success_description'))
-                                ->success()
-                                ->send();
-                        }
-                    }),
+                    ->action(fn ($record, array $data) => static::retry($record, (int) ($data['delay'] ?? 0))),
                 Action::make('details')
                     ->label(__('filament-jobs-monitor::translations.details'))
                     ->icon('heroicon-o-information-circle')
+                    ->modalHeading(fn ($record): string => $record->name ?: __('filament-jobs-monitor::translations.details'))
+                    ->modalWidth(Width::FiveExtraLarge)
                     ->modalContent(fn ($record) => view('filament-jobs-monitor::queue-monitor-details', [
-                        'exception_message' => $record->exception_message,
-                        'failed' => $record->failed,
-                        'attempts' => $record->attempt,
+                        'record' => $record,
+                        'payload' => static::payloadFor($record),
+                        'failuresUrl' => static::failuresUrlFor($record),
                     ]))
+                    ->extraModalFooterActions([
+                        Action::make('retry_from_details')
+                            ->label(__('filament-jobs-monitor::translations.retry'))
+                            ->icon('heroicon-o-arrow-path')
+                            ->color('warning')
+                            ->visible(fn ($record): bool => $record->hasFailed() && Authorization::allows(Authorization::RETRY, $record))
+                            ->action(fn ($record) => static::retry($record, 0)),
+                    ])
                     ->modalSubmitAction(false),
             ])
             ->bulkActions([
@@ -344,6 +323,75 @@ class QueueMonitorResource extends Resource
     public static function getNavigationLabel(): string
     {
         return Str::title(static::getPluralModelLabel());
+    }
+
+    /**
+     * Retry a failed job, optionally after a delay in minutes.
+     */
+    public static function retry(QueueMonitor $record, int $delay = 0): void
+    {
+        $failedJob = resolve(FailedJob::class)::where('uuid', $record->job_id)->first();
+
+        if (! $failedJob) {
+            Notification::make()
+                ->title(__('filament-jobs-monitor::translations.retry_failed'))
+                ->body(__('filament-jobs-monitor::translations.retry_failed_description'))
+                ->danger()
+                ->send();
+
+            return;
+        }
+
+        if ($delay > 0) {
+            RetryFailedJobJob::dispatch([$failedJob->uuid])->delay(now()->addMinutes($delay));
+
+            Notification::make()
+                ->title(__('filament-jobs-monitor::translations.retry_scheduled'))
+                ->body(__('filament-jobs-monitor::translations.retry_scheduled_description', ['minutes' => $delay]))
+                ->success()
+                ->send();
+
+            return;
+        }
+
+        Artisan::call('queue:retry', ['id' => [$failedJob->uuid]]);
+
+        Notification::make()
+            ->title(__('filament-jobs-monitor::translations.retry_success'))
+            ->body(__('filament-jobs-monitor::translations.retry_success_description'))
+            ->success()
+            ->send();
+    }
+
+    /**
+     * The payload of a monitored job, when Laravel still has it.
+     *
+     * Only a failed job keeps one: `failed_jobs` stores the payload, while a job
+     * that ran to completion is deleted from the queue with its payload.
+     *
+     * @return array<string, mixed>|null
+     */
+    public static function payloadFor(QueueMonitor $record): ?array
+    {
+        if (! $record->hasFailed()) {
+            return null;
+        }
+
+        $payload = resolve(FailedJob::class)::where('uuid', $record->job_id)->first()?->payload;
+
+        return is_array($payload) ? $payload : null;
+    }
+
+    /**
+     * A link to the Failures page for a grouped failure, when it is reachable.
+     */
+    public static function failuresUrlFor(QueueMonitor $record): ?string
+    {
+        if (blank($record->failure_signature) || ! ListFailures::canAccess()) {
+            return null;
+        }
+
+        return ListFailures::getUrl();
     }
 
     public static function canViewAny(): bool

@@ -434,6 +434,9 @@ class QueueMonitorResource extends Resource
     /**
      * The batches jobs were actually monitored in, newest first.
      *
+     * Grouped rather than DISTINCT: MySQL rejects ordering a DISTINCT select
+     * by a column it does not select (error 3065, under ONLY_FULL_GROUP_BY).
+     *
      * @return array<string, string>
      */
     public static function batchFilterOptions(): array
@@ -444,8 +447,8 @@ class QueueMonitorResource extends Resource
 
         return resolve(QueueMonitor::class)::query()
             ->whereNotNull('batch_id')
-            ->distinct()
-            ->orderByDesc('started_at')
+            ->groupBy('batch_id')
+            ->orderByRaw('max(started_at) desc')
             ->limit(50)
             ->pluck('batch_id', 'batch_id')
             ->map(fn (string $id): string => Str::limit($id, 8, ''))
@@ -453,7 +456,8 @@ class QueueMonitorResource extends Resource
     }
 
     /**
-     * The chains jobs were monitored in, newest first.
+     * The chains jobs were monitored in, newest first. Grouped for the same
+     * reason as batchFilterOptions().
      *
      * @return array<string, string>
      */
@@ -465,8 +469,8 @@ class QueueMonitorResource extends Resource
 
         return resolve(QueueMonitor::class)::query()
             ->whereNotNull('chain_id')
-            ->distinct()
-            ->orderByDesc('started_at')
+            ->groupBy('chain_id')
+            ->orderByRaw('max(started_at) desc')
             ->limit(50)
             ->pluck('chain_id', 'chain_id')
             ->map(fn (string $id): string => Str::limit($id, 8, ''))

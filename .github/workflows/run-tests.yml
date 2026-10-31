@@ -20,12 +20,31 @@ jobs:
       matrix:
         # v5 targets Filament 5 only; Laravel 12 and 13 are both exercised, and
         # Laravel 12 is also resolved against its lowest versions.
+        # One entry runs on MySQL: it is the only way to catch what SQLite
+        # accepts and MySQL rejects under ONLY_FULL_GROUP_BY, which Laravel's
+        # default `strict` connection enables (see #189).
         include:
-          - { php: '8.3', laravel: '12.*', testbench: '^10.10', stability: prefer-lowest }
-          - { php: '8.4', laravel: '12.*', testbench: '^10.10', stability: prefer-stable }
-          - { php: '8.5', laravel: '13.*', testbench: '^11.0', stability: prefer-stable }
+          - { php: '8.3', laravel: '12.*', testbench: '^10.10', stability: prefer-lowest, db: sqlite }
+          - { php: '8.4', laravel: '12.*', testbench: '^10.10', stability: prefer-stable, db: sqlite }
+          - { php: '8.5', laravel: '13.*', testbench: '^11.0', stability: prefer-stable, db: sqlite }
+          - { php: '8.5', laravel: '13.*', testbench: '^11.0', stability: prefer-stable, db: mysql }
 
-    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} - ${{ matrix.stability }}
+    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.db }}
+
+    # The container starts for every entry; only the MySQL one connects to it.
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+          MYSQL_DATABASE: testing
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
 
     steps:
       - name: Checkout code
@@ -35,7 +54,7 @@ jobs:
         uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, bcmath, intl, fileinfo
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, bcmath, intl, fileinfo, pdo_mysql
           coverage: none
 
       - name: Install dependencies
@@ -45,6 +64,13 @@ jobs:
 
       - name: Execute tests
         run: vendor/bin/pest --no-coverage
+        env:
+          DB_CONNECTION: ${{ matrix.db }}
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: testing
+          DB_USERNAME: root
+          DB_PASSWORD: ''
 
   # Single stable context for branch protection: the matrix can change freely
   # without the required check having to be renamed in the repository settings.

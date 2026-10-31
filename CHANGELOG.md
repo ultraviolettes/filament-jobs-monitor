@@ -2,6 +2,14 @@
 
 All notable changes to `filament-jobs-monitor` will be documented in this file.
 
+## 5.1.1 - 2026-10-31
+
+A fix for the 500 that 5.1.0 could cause on MySQL. Upgrade if you ran the batches migration.
+
+### Fixed
+
+- **The Job History page returned a 500 on MySQL** once the batches migration had added `batch_id`, even with an empty `queue_monitors` table. The batch and chain filter options ran `select distinct batch_id ... order by started_at desc`, and MySQL rejects ordering a `DISTINCT` select by a column it does not select (error 3065, under the `ONLY_FULL_GROUP_BY` mode that Laravel's default `strict` connection enables). They now group by the id and order by `max(started_at)`, which leaves the options and their order unchanged. PostgreSQL has the same rule. Thanks @jcsoriano. (#189)
+
 ## 5.1.0 - 2026-10-04
 
 Batches and chains become first-class (#133). Everything here is additive and opt-in: a package

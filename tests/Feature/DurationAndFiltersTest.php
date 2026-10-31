@@ -2,6 +2,7 @@
 
 use Croustibat\FilamentJobsMonitor\Models\QueueMonitor;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 beforeEach(function () {
@@ -68,8 +69,16 @@ it('ignores monitors without a queue', function () {
 });
 
 it('builds the epoch expression of the current driver', function () {
-    // The suite runs on SQLite, where a bare datetime subtraction returns 0 (#55).
-    expect(QueueMonitor::epochSeconds('started_at'))->toContain('strftime')
+    // A bare datetime subtraction returns 0 on SQLite (#55), so every driver
+    // gets its own expression and the suite runs on more than one of them.
+    $expected = [
+        'sqlite' => 'strftime',
+        'mysql' => 'UNIX_TIMESTAMP',
+        'mariadb' => 'UNIX_TIMESTAMP',
+        'pgsql' => 'EXTRACT(EPOCH',
+    ][DB::connection()->getDriverName()];
+
+    expect(QueueMonitor::epochSeconds('started_at'))->toContain($expected)
         ->and(QueueMonitor::elapsedSeconds())->toContain('finished_at')
         ->and(QueueMonitor::elapsedSeconds())->toContain('started_at');
 });

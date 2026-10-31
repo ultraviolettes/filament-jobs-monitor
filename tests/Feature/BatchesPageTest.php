@@ -141,6 +141,18 @@ it('offers the batches jobs were monitored in as a filter', function () {
         ->and(QueueMonitorResource::batchFilterOptions())->toBe(['abcdef123456' => 'abcdef12']);
 });
 
+it('offers each batch and chain once, the most recently run first', function () {
+    foreach ([['batch-a', 'chain-b', 3], ['batch-b', 'chain-a', 2], ['batch-a', 'chain-b', 1]] as $index => [$batchId, $chainId, $minutesAgo]) {
+        QueueMonitor::create([
+            'job_id' => "j{$index}", 'batch_id' => $batchId, 'chain_id' => $chainId, 'queue' => 'default',
+            'started_at' => now()->subMinutes($minutesAgo), 'failed' => false, 'attempt' => 1,
+        ]);
+    }
+
+    expect(QueueMonitorResource::batchFilterOptions())->toBe(['batch-a' => 'batch-a', 'batch-b' => 'batch-b'])
+        ->and(QueueMonitorResource::chainFilterOptions())->toBe(['chain-b' => 'chain-b', 'chain-a' => 'chain-a']);
+});
+
 it('scopes batches to the tenant that ran their jobs', function () {
     createBatchesTable();
 

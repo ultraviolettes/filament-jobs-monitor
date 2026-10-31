@@ -447,8 +447,8 @@ class QueueMonitorResource extends Resource
 
         return resolve(QueueMonitor::class)::query()
             ->whereNotNull('batch_id')
-            ->distinct()
-            ->orderByDesc('started_at')
+            ->groupBy('batch_id')
+            ->orderByRaw('max(started_at) desc')
             ->limit(50)
             ->pluck('batch_id', 'batch_id')
             ->map(fn (string $id): string => Str::limit($id, 8, ''))
@@ -469,8 +469,8 @@ class QueueMonitorResource extends Resource
 
         return resolve(QueueMonitor::class)::query()
             ->whereNotNull('chain_id')
-            ->distinct()
-            ->orderByDesc('started_at')
+            ->groupBy('chain_id')
+            ->orderByRaw('max(started_at) desc')
             ->limit(50)
             ->pluck('chain_id', 'chain_id')
             ->map(fn (string $id): string => Str::limit($id, 8, ''))

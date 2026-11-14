@@ -61,6 +61,8 @@ return [
     'retry_all_scheduled_description' => ':count Prozesse werden in :minutes erneut Versucht.',
     'no_pending_jobs' => 'Keine wartenden Prozesse',
     'no_pending_jobs_description' => 'Es gibt aktuell keine Prozesse die darauf warten ausgeführt zu werden.',
+    'no_jobs' => 'Keine Jobs',
+    'no_jobs_description' => 'Jobs werden hier angezeigt, sobald ein Queue-Worker sie verarbeitet hat.',
     'pending_jobs_not_supported_title' => 'Nicht unterstützt',
     'pending_jobs_not_supported_description' => 'Die zukünftigen Prozesse einzusehen wird aktuell nur mit dem Datenbank-Treiber unterstützt.',
 ];

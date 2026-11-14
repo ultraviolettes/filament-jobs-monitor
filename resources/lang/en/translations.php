@@ -104,6 +104,8 @@ return [
     'retry_all_scheduled_description' => ':count job(s) will be retried in :minutes minute(s).',
     'no_pending_jobs' => 'No pending jobs',
     'no_pending_jobs_description' => 'There are no jobs waiting to be processed.',
+    'no_jobs' => 'No jobs',
+    'no_jobs_description' => 'Jobs show up here once a queue worker has processed them.',
     'failures' => 'Failures',
     'failures_subheading' => 'Grouped by exception class, job class and normalised message',
     'open' => 'Open',

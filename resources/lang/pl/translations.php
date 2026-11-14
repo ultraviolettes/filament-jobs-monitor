@@ -104,6 +104,8 @@ return [
     'retry_all_scheduled_description' => ':count zadań zostanie ponowionych za :minutes minut(y).',
     'no_pending_jobs' => 'Brak oczekujących zadań',
     'no_pending_jobs_description' => 'Nie ma zadań oczekujących na przetworzenie.',
+    'no_jobs' => 'Brak zadań',
+    'no_jobs_description' => 'Zadania pojawią się tutaj, gdy przetworzy je worker kolejki.',
     'failures' => 'Niepowodzenia',
     'failures_subheading' => 'Grupowane według klasy wyjątku, klasy zadania i znormalizowanej wiadomości',
     'open' => 'Otwarte',

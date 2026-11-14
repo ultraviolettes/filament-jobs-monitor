@@ -21,4 +21,6 @@ return [
     'details' => 'Detalhes',
     'attempts' => 'Tentativas',
     'exception' => 'Exceção',
+    'no_jobs' => 'Nenhum job',
+    'no_jobs_description' => 'Os jobs aparecerão aqui assim que um worker da fila os processar.',
 ];

@@ -386,6 +386,8 @@ class QueueMonitorResource extends Resource
                         }
                     }),
             ])
+            ->emptyStateHeading(__('filament-jobs-monitor::translations.no_jobs'))
+            ->emptyStateDescription(__('filament-jobs-monitor::translations.no_jobs_description'))
             ->poll(config('filament-jobs-monitor.resources.polling_interval'));
     }
 

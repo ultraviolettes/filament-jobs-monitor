@@ -61,6 +61,8 @@ return [
     'retry_all_scheduled_description' => 'سيتم إعادة :count مهمة بعد :minutes دقيقة.',
     'no_pending_jobs' => 'لا يوجد مهام بانتظار التنفيذ',
     'no_pending_jobs_description' => 'لا توجد أي مهام بانتظار المعالجة حالياً.',
+    'no_jobs' => 'لا توجد مهام',
+    'no_jobs_description' => 'ستظهر المهام هنا بمجرد أن يعالجها عامل قائمة الانتظار.',
     'pending_jobs_not_supported_title' => 'غير مدعوم',
     'pending_jobs_not_supported_description' => 'عرض المهام بانتظار التنفيذ متاح فقط عند استخدام نظام قائمة الانتظار من نوع قاعدة بيانات.',
 ];

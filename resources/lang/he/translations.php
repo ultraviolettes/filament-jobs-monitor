@@ -61,6 +61,8 @@ return [
     'retry_all_scheduled_description' => 'עבור :count עבודות נקבע ניסיון חוזר בעוד :minutes דקות.',
     'no_pending_jobs' => 'אין עבודות ממתינות',
     'no_pending_jobs_description' => 'אין עבודות שממתינות לעיבוד.',
+    'no_jobs' => 'אין משימות',
+    'no_jobs_description' => 'משימות יופיעו כאן לאחר שעובד התור יעבד אותן.',
     'pending_jobs_not_supported_title' => 'לא נתמך',
     'pending_jobs_not_supported_description' => 'הצגת עבודות ממתינות נתמכת רק בעת שימוש במנהל התורים מסוג database.',
 ];

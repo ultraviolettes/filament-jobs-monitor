@@ -21,4 +21,6 @@ return [
     'details' => 'Detaily',
     'attempts' => 'Pokusy',
     'exception' => 'Exception',
+    'no_jobs' => 'Žiadne úlohy',
+    'no_jobs_description' => 'Úlohy sa tu zobrazia po ich spracovaní vo fronte.',
 ];

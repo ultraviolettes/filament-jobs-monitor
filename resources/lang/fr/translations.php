@@ -104,6 +104,8 @@ return [
     'retry_all_scheduled_description' => ':count job(s) seront réessayés dans :minutes minute(s).',
     'no_pending_jobs' => 'Aucun job en attente',
     'no_pending_jobs_description' => 'Il n\'y a aucun job en attente de traitement.',
+    'no_jobs' => 'Aucune tâche',
+    'no_jobs_description' => 'Les tâches apparaîtront ici une fois traitées par un worker de file d’attente.',
     'failures' => 'Échecs',
     'failures_subheading' => 'Groupés par classe d\'exception, classe de job et message normalisé',
     'open' => 'Ouverts',

@@ -21,6 +21,6 @@ return [
     'details' => 'Dettagli',
     'attempts' => 'Tentativi',
     'exception' => 'Exception',
-    'no_jobs' => 'Nessun job',
-    'no_jobs_description' => 'I job appariranno qui dopo essere stati elaborati da un worker della coda.',
+    'no_jobs' => 'Nessun lavoro',
+    'no_jobs_description' => 'I lavori appariranno qui dopo essere stati elaborati da un worker della coda.',
 ];

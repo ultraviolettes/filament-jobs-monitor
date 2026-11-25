@@ -7,7 +7,7 @@
  * as one of them catches up, which forces it to be removed from this list.
  *
  * Key counts at the time of writing (out of 110):
- *   ar 62, cs 19, de 62, es 20, fa 18, he 62, it 20, nl 18, pt_BR 20, sk 20
+ *   ar 62, cs 19, de 62, es 20, fa 18, he 62, it 20, nl 18, pt_BR 20
  *
  * `ar` additionally drops the `:count` placeholder in
  * `bulk_retry_partial_description`; that is covered by the placeholder
@@ -16,7 +16,7 @@
  * Translation contributions are very welcome — see the Contributing section of
  * the README.
  */
-const INCOMPLETE_LOCALES = ['ar', 'cs', 'de', 'es', 'fa', 'he', 'it', 'nl', 'pt_BR', 'sk'];
+const INCOMPLETE_LOCALES = ['ar', 'cs', 'de', 'es', 'fa', 'he', 'it', 'nl', 'pt_BR'];
 
 const REFERENCE_LOCALE = 'en';
 

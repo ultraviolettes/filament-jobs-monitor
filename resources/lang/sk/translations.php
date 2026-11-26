@@ -104,6 +104,8 @@ return [
     'retry_all_scheduled_description' => 'Počet úloh na zopakovanie o :minutes min: :count.',
     'no_pending_jobs' => 'Žiadne čakajúce úlohy',
     'no_pending_jobs_description' => 'Žiadne úlohy nečakajú na spracovanie.',
+    'no_jobs' => 'Žiadne úlohy',
+    'no_jobs_description' => 'Úlohy sa tu zobrazia po ich spracovaní vo fronte.',
     'failures' => 'Chyby',
     'failures_subheading' => 'Zoskupené podľa triedy výnimky, triedy úlohy a upravenej správy',
     'open' => 'Otvorené',

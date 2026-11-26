@@ -19,4 +19,6 @@ return [
     'progress' => 'Voortgang',
     'started_at' => 'Gestart op',
     'details' => 'Details',
+    'no_jobs' => 'Geen taken',
+    'no_jobs_description' => 'Taken verschijnen hier zodra een queue-worker ze heeft verwerkt.',
 ];

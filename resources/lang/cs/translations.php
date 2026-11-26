@@ -20,4 +20,6 @@ return [
     'details' => 'Podrobnosti',
     'attempts' => 'Pokusy',
     'exception' => 'Exception',
+    'no_jobs' => 'Žádné úlohy',
+    'no_jobs_description' => 'Úlohy se zde zobrazí, jakmile je zpracuje queue worker.',
 ];

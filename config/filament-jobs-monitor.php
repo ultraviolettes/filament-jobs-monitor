@@ -42,6 +42,17 @@ return [
          */
         'sub_navigation_position' => null,
         /**
+         * How timestamps are shown in the tables and the job details:
+         * 'relative' ("5 minutes ago") or 'absolute' (Filament's default
+         * date time format). An unknown value falls back to 'relative'.
+         */
+        'timestamps' => 'relative',
+        /**
+         * Tooltip shown on hover over a timestamp: null (none), 'relative' or
+         * 'absolute'. An unknown value falls back to null.
+         */
+        'timestamp_tooltip' => null,
+        /**
          * Table polling interval for the Job History and Pending jobs pages
          * (null to disable). Opt-in, because a poll also re-runs the four tab
          * count badges and the stats overview widget on the Job History page.

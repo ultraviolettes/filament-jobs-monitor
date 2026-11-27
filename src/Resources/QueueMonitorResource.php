@@ -406,11 +406,6 @@ class QueueMonitorResource extends Resource
         return FilamentJobsMonitorPlugin::get()->getPluralLabel();
     }
 
-    public static function getNavigationLabel(): string
-    {
-        return Str::title(static::getPluralModelLabel());
-    }
-
     /**
      * Whether the batches migration has been run. Memoized: the table renders
      * this per column, not per row.

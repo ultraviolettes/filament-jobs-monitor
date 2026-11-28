@@ -5,6 +5,7 @@ namespace Croustibat\FilamentJobsMonitor\Resources;
 use Carbon\CarbonInterface;
 use Croustibat\FilamentJobsMonitor\Authorization;
 use Croustibat\FilamentJobsMonitor\Chains;
+use Croustibat\FilamentJobsMonitor\Columns\DateTimeColumn;
 use Croustibat\FilamentJobsMonitor\Columns\ProgressColumn;
 use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
 use Croustibat\FilamentJobsMonitor\Jobs\RetryFailedJobJob;
@@ -32,6 +33,7 @@ use Filament\Resources\Resource;
 use Filament\Resources\Resource\Concerns\HasNavigation;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
+use Filament\Support\Facades\FilamentTimezone;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -102,9 +104,8 @@ class QueueMonitorResource extends Resource
                 ProgressColumn::make('progress')
                     ->label(__('filament-jobs-monitor::translations.progress'))
                     ->sortable(),
-                TextColumn::make('started_at')
+                DateTimeColumn::make('started_at')
                     ->label(__('filament-jobs-monitor::translations.started_at'))
-                    ->since()
                     ->sortable(),
                 TextColumn::make('duration')
                     ->label(__('filament-jobs-monitor::translations.duration'))
@@ -132,9 +133,8 @@ class QueueMonitorResource extends Resource
                     ->label(__('filament-jobs-monitor::translations.attempts'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('finished_at')
+                DateTimeColumn::make('finished_at')
                     ->label(__('filament-jobs-monitor::translations.finished_at'))
-                    ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -500,6 +500,42 @@ class QueueMonitorResource extends Resource
         return __('filament-jobs-monitor::translations.over_slow_threshold', [
             'seconds' => SlowJobs::thresholdSeconds(),
         ]);
+    }
+
+    /**
+     * A timestamp for the job details, shown like `DateTimeColumn`: relative or
+     * absolute, in the panel timezone and Filament's default date time format.
+     */
+    public static function formatDateTime(?CarbonInterface $date): string
+    {
+        return $date === null
+            ? '—'
+            : static::formatDateTimeAs($date, FilamentJobsMonitorPlugin::get()->getTimestamps());
+    }
+
+    /**
+     * The tooltip of a timestamp in the job details, like `DateTimeColumn`, or
+     * null when there is none.
+     */
+    public static function formatDateTimeTooltip(?CarbonInterface $date): ?string
+    {
+        $tooltip = FilamentJobsMonitorPlugin::get()->getTimestampTooltip();
+
+        return $date === null || $tooltip === null
+            ? null
+            : static::formatDateTimeAs($date, $tooltip);
+    }
+
+    /**
+     * A timestamp relative to now or as a date and time, in the panel timezone.
+     */
+    protected static function formatDateTimeAs(CarbonInterface $date, string $mode): string
+    {
+        $date = $date->copy()->setTimezone(FilamentTimezone::get());
+
+        return $mode === FilamentJobsMonitorPlugin::TIMESTAMPS_ABSOLUTE
+            ? $date->translatedFormat(Schema::make()->getDefaultDateTimeDisplayFormat())
+            : $date->diffForHumans();
     }
 
     /**

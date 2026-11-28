@@ -3,6 +3,7 @@
 namespace Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Pages;
 
 use Croustibat\FilamentJobsMonitor\Authorization;
+use Croustibat\FilamentJobsMonitor\Columns\DateTimeColumn;
 use Croustibat\FilamentJobsMonitor\Models\QueueJob;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource;
 use Filament\Actions\DeleteAction;
@@ -65,13 +66,11 @@ class ListPendingJobs extends Page implements HasTable
                 TextColumn::make('attempts')
                     ->label(__('filament-jobs-monitor::translations.attempts'))
                     ->sortable(),
-                TextColumn::make('available_at')
+                DateTimeColumn::make('available_at')
                     ->label(__('filament-jobs-monitor::translations.available_at'))
-                    ->since()
                     ->sortable(),
-                TextColumn::make('created_at')
+                DateTimeColumn::make('created_at')
                     ->label(__('filament-jobs-monitor::translations.created_at'))
-                    ->since()
                     ->sortable(),
             ])
             ->defaultSort('created_at', 'desc')

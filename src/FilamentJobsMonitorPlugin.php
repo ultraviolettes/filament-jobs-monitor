@@ -14,6 +14,33 @@ class FilamentJobsMonitorPlugin implements Plugin
     use EvaluatesClosures;
 
     /**
+     * Show a timestamp relative to now ("5 minutes ago").
+     */
+    public const TIMESTAMPS_RELATIVE = 'relative';
+
+    /**
+     * Show a timestamp as a date and time, in Filament's default date time format.
+     */
+    public const TIMESTAMPS_ABSOLUTE = 'absolute';
+
+    /**
+     * How timestamps are shown. Null falls back to the `resources.timestamps`
+     * config key.
+     */
+    protected ?string $timestamps = null;
+
+    /**
+     * The tooltip shown on hover over a timestamp, null for none.
+     */
+    protected ?string $timestampTooltip = null;
+
+    /**
+     * Whether `timestampTooltip()` was called. Null is a valid tooltip (none),
+     * so it cannot tell "not set" from "set to none" on its own.
+     */
+    protected bool $hasTimestampTooltip = false;
+
+    /**
      * The resource label.
      */
     protected string|Closure|null $label = null;
@@ -303,6 +330,57 @@ class FilamentJobsMonitorPlugin implements Plugin
     public function subNavigationPosition(SubNavigationPosition|Closure $position): static
     {
         $this->subNavigationPosition = $position;
+
+        return $this;
+    }
+
+    /**
+     * Get how timestamps are shown: `TIMESTAMPS_RELATIVE` (default) or
+     * `TIMESTAMPS_ABSOLUTE`. An unknown value falls back to relative.
+     */
+    public function getTimestamps(): string
+    {
+        $timestamps = $this->timestamps ?? config('filament-jobs-monitor.resources.timestamps');
+
+        return $timestamps === self::TIMESTAMPS_ABSOLUTE
+            ? self::TIMESTAMPS_ABSOLUTE
+            : self::TIMESTAMPS_RELATIVE;
+    }
+
+    /**
+     * Set how timestamps are shown: `TIMESTAMPS_RELATIVE` or `TIMESTAMPS_ABSOLUTE`.
+     */
+    public function timestamps(string $timestamps): static
+    {
+        $this->timestamps = $timestamps;
+
+        return $this;
+    }
+
+    /**
+     * Get the tooltip shown on hover over a timestamp: null (default, none),
+     * `TIMESTAMPS_RELATIVE` or `TIMESTAMPS_ABSOLUTE`. An unknown value falls
+     * back to null.
+     */
+    public function getTimestampTooltip(): ?string
+    {
+        $tooltip = $this->hasTimestampTooltip
+            ? $this->timestampTooltip
+            : config('filament-jobs-monitor.resources.timestamp_tooltip');
+
+        return in_array($tooltip, [self::TIMESTAMPS_RELATIVE, self::TIMESTAMPS_ABSOLUTE], true)
+            ? $tooltip
+            : null;
+    }
+
+    /**
+     * Set the tooltip shown on hover over a timestamp: null (none),
+     * `TIMESTAMPS_RELATIVE` or `TIMESTAMPS_ABSOLUTE`.
+     */
+    public function timestampTooltip(?string $tooltip): static
+    {
+        $this->timestampTooltip = $tooltip;
+        $this->hasTimestampTooltip = true;
 
         return $this;
     }

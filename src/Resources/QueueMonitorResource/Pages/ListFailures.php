@@ -3,6 +3,7 @@
 namespace Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Pages;
 
 use Croustibat\FilamentJobsMonitor\Authorization;
+use Croustibat\FilamentJobsMonitor\Columns\DateTimeColumn;
 use Croustibat\FilamentJobsMonitor\Models\FailedJob;
 use Croustibat\FilamentJobsMonitor\Models\FailureGroup;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource;
@@ -145,9 +146,8 @@ class ListFailures extends Page implements HasTable
                             ? __('filament-jobs-monitor::translations.new_today', ['count' => $today])
                             : null;
                     }),
-                TextColumn::make('last_occurred_at')
+                DateTimeColumn::make('last_occurred_at')
                     ->label(__('filament-jobs-monitor::translations.last_seen'))
-                    ->since()
                     ->sortable(),
                 ViewColumn::make('trend')
                     ->label(__('filament-jobs-monitor::translations.trend_7d'))

@@ -9,13 +9,15 @@
         ])
         : null;
 
+    $resource = \Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin::get()->getResource();
+
     $meta = [
         [__('filament-jobs-monitor::translations.status'), __('filament-jobs-monitor::translations.'.$record->status)],
         [__('filament-jobs-monitor::translations.queue'), $record->queue ?: '—'],
         [__('filament-jobs-monitor::translations.attempts'), (string) $record->attempt],
         [__('filament-jobs-monitor::translations.duration'), $duration ?? '—'],
-        [__('filament-jobs-monitor::translations.started_at'), $record->started_at?->diffForHumans() ?? '—'],
-        [__('filament-jobs-monitor::translations.finished_at'), $record->finished_at?->diffForHumans() ?? '—'],
+        [__('filament-jobs-monitor::translations.started_at'), $resource::formatDateTime($record->started_at), $resource::formatDateTimeTooltip($record->started_at)],
+        [__('filament-jobs-monitor::translations.finished_at'), $resource::formatDateTime($record->finished_at), $resource::formatDateTimeTooltip($record->finished_at)],
         [__('filament-jobs-monitor::translations.job_id'), $record->job_id],
         [__('filament-jobs-monitor::translations.progress'), $record->progress !== null ? $record->progress.'%' : '—'],
     ];
@@ -24,10 +26,23 @@
 <div class="space-y-6 text-sm">
     {{-- meta strip --}}
     <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        @foreach ($meta as [$label, $value])
+        @foreach ($meta as $item)
+            @php
+                [$label, $value] = $item;
+                $tooltip = $item[2] ?? null;
+            @endphp
             <div class="rounded-lg bg-gray-50 px-3 py-2 ring-1 ring-gray-950/5 dark:bg-white/5 dark:ring-white/10">
                 <div class="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ $label }}</div>
-                <div class="mt-0.5 truncate font-mono text-sm font-semibold text-gray-950 dark:text-white" title="{{ $value }}">{{ $value }}</div>
+                <div class="mt-0.5 truncate font-mono text-sm font-semibold text-gray-950 dark:text-white"
+                    @if ($tooltip)
+                        x-tooltip="{
+                            content: @js($tooltip),
+                            theme: $store.theme,
+                        }"
+                    @else
+                        title="{{ $value }}"
+                    @endif
+                >{{ $value }}</div>
             </div>
         @endforeach
     </div>

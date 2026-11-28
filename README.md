@@ -65,6 +65,8 @@ return [
         'resource' => Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource::class,
         'cluster' => null,
         'sub_navigation_position' => null, // SubNavigationPosition::Top, ::Start or ::End
+        'timestamps' => 'relative', // or 'absolute'
+        'timestamp_tooltip' => null, // or 'relative' / 'absolute'
         'polling_interval' => null, // e.g. '10s' to auto-refresh the job tables
     ],
     'failures' => [
@@ -478,6 +480,26 @@ are wide tables and a side column eats their horizontal space. Move it with the 
 or with the `resources.sub_navigation_position` config key, which the plugin method overrides.
 `SubNavigationPosition::Start`, `::End` and `::Top` are Filament's three positions; the matching
 strings (`'start'`, `'end'`, `'top'`) are accepted in the config file.
+
+### Timestamps
+
+The tables and the job details show timestamps relative to now ("5 minutes ago") and without a
+tooltip by default. Show them as a date and time, and add a tooltip with the other form, with the plugin:
+
+```php
+        // AdminPanelProvider.php
+        ->plugins([
+            FilamentJobsMonitorPlugin::make()
+                ->timestamps(FilamentJobsMonitorPlugin::TIMESTAMPS_RELATIVE) // default
+                ->timestampTooltip(FilamentJobsMonitorPlugin::TIMESTAMPS_ABSOLUTE), // null (default) for none
+        ])
+```
+
+or with the `resources.timestamps` and `resources.timestamp_tooltip` config keys (`'relative'`,
+`'absolute'`, and `null` for no tooltip), which the plugin methods override. An unknown value falls
+back to the default. Absolute timestamps use the panel timezone and Filament's default date time
+format, so `Table::configureUsing()` / `Schema::configureUsing()` with `defaultDateTimeDisplayFormat()`
+changes them too.
 
 ### Enabling navigation
 

@@ -3,6 +3,7 @@
 namespace Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource\Pages;
 
 use Croustibat\FilamentJobsMonitor\Authorization;
+use Croustibat\FilamentJobsMonitor\Columns\DateTimeColumn;
 use Croustibat\FilamentJobsMonitor\Models\JobBatch;
 use Croustibat\FilamentJobsMonitor\Models\QueueJob;
 use Croustibat\FilamentJobsMonitor\Resources\QueueMonitorResource;
@@ -98,16 +99,14 @@ class ListBatches extends Page implements HasTable
                 TextColumn::make('pending_jobs')
                     ->label(__('filament-jobs-monitor::translations.pending'))
                     ->sortable(),
-                TextColumn::make('created_at')
+                DateTimeColumn::make('created_at')
                     ->label(__('filament-jobs-monitor::translations.started_at'))
                     ->state(fn (JobBatch $record) => $record->startedAt())
-                    ->since()
                     ->sortable(),
-                TextColumn::make('finished_at')
+                DateTimeColumn::make('finished_at')
                     ->label(__('filament-jobs-monitor::translations.finished_at'))
                     ->state(fn (JobBatch $record) => $record->finishedAt())
                     ->placeholder('—')
-                    ->since()
                     ->sortable(),
             ])
             ->defaultSort('created_at', 'desc')
